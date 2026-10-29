@@ -5,6 +5,8 @@ import { db } from "@/server/db";
 import { requireUser } from "@/server/auth/current-user";
 import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
 import { getMyTracks } from "@/server/services/learning";
+import { getLevelInfo } from "@/server/services/gamification";
+import { LevelCard } from "@/components/learning/level-card";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, ProgressBar } from "@/components/ui/feedback";
@@ -18,7 +20,7 @@ export const metadata: Metadata = { title: "Painel" };
 export default async function DashboardPage() {
   const user = await requireUser();
   const isAdmin = hasPermission(user, PERMISSIONS.ADMIN_ACESSAR);
-  const mine = await getMyTracks(db, user);
+  const [mine, level] = await Promise.all([getMyTracks(db, user), getLevelInfo(db, user.id)]);
   const next = mine.next;
   const active = [...mine.inProgress, ...mine.notStarted];
 
@@ -83,25 +85,28 @@ export default async function DashboardPage() {
                 )}
               </CardBody>
             </Card>
-            <Card className="lg:col-span-4">
-              <CardBody className="flex h-full flex-col gap-3">
-                <p className="text-small text-ink-soft">Progresso geral nas suas trilhas</p>
-                <p className="text-h3 font-medium text-ink">{mine.overallPercent}%</p>
-                <ProgressBar value={mine.overallPercent} label="Progresso geral" showValue={false} />
-                <dl className="mt-auto grid grid-cols-3 gap-2 text-center">
-                  {[
-                    ["Em curso", mine.inProgress.length],
-                    ["A iniciar", mine.notStarted.length],
-                    ["Concluídas", mine.completed.length],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-md bg-page px-2 py-2">
-                      <dd className="text-h5 font-medium text-ink">{value}</dd>
-                      <dt className="text-caption text-ink-muted">{label}</dt>
-                    </div>
-                  ))}
-                </dl>
-              </CardBody>
-            </Card>
+            <div className="flex flex-col gap-6 lg:col-span-4">
+              <LevelCard level={level} />
+              <Card>
+                <CardBody className="flex h-full flex-col gap-3">
+                  <p className="text-small text-ink-soft">Progresso geral nas suas trilhas</p>
+                  <p className="text-h3 font-medium text-ink">{mine.overallPercent}%</p>
+                  <ProgressBar value={mine.overallPercent} label="Progresso geral" showValue={false} />
+                  <dl className="mt-auto grid grid-cols-3 gap-2 text-center">
+                    {[
+                      ["Em curso", mine.inProgress.length],
+                      ["A iniciar", mine.notStarted.length],
+                      ["Concluídas", mine.completed.length],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-md bg-page px-2 py-2">
+                        <dd className="text-h5 font-medium text-ink">{value}</dd>
+                        <dt className="text-caption text-ink-muted">{label}</dt>
+                      </div>
+                    ))}
+                  </dl>
+                </CardBody>
+              </Card>
+            </div>
           </div>
 
           {active.length > 0 && (

@@ -84,6 +84,12 @@ O SQLite atende um piloto com dezenas de usuários em **um único servidor**. Pa
 - O player envia sinais para `POST /api/progresso/video` a cada ~10 s, na pausa, ao pular e ao sair da página (sendBeacon). Abrir e confirmar usam Server Actions.
 - A abertura é registrada por efeito no navegador (não na renderização), para que pré-carregamentos não contem como acesso.
 
+## Gamificação (Fase 4)
+
+- `src/lib/gamification.ts`: cálculo de nível e critérios de conquista (puro).
+- `src/server/services/gamification.ts`: concessão idempotente (`rewardProgress`), conquistas, notificações e configuração. É chamada pelo serviço de aprendizagem ao final de cada conclusão; como é idempotente, recebe todas as etapas e trilhas concluídas e só lança o que ainda não foi lançado.
+- Valores iniciais (níveis, regras, conquistas) são criados pelo seed apenas se ainda não existirem.
+
 ## Conteúdo e editor
 
 - Artigos e FAQs são editados com **Tiptap**; o documento é salvo em JSON e o servidor gera o HTML com `renderRichText`, que só aceita elementos e atributos conhecidos (títulos, parágrafos, listas, negrito, itálico, sublinhado, links http/https/mailto, imagens da própria plataforma com legenda, tabelas, destaque e linha divisória). O mesmo código gera o texto puro para a busca (Fase 5) e a lista de imagens incorporadas (controle de acesso).

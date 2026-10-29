@@ -15,6 +15,8 @@ import {
   IconFiles,
   IconFolders,
   IconRoute,
+  IconTrophy,
+  IconSparkles,
   IconX,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -24,6 +26,7 @@ import { cn } from "@/lib/cn";
 import { Avatar } from "@/components/ui/feedback";
 import { BrandMark } from "@/components/layout/brand-mark";
 import { ThemeToggle, type ThemePreference } from "@/components/layout/theme-toggle";
+import { NotificationBell, type NotificationItem } from "@/components/layout/notification-bell";
 
 const ICONS = {
   painel: IconLayoutDashboard,
@@ -35,6 +38,8 @@ const ICONS = {
   conteudos: IconFiles,
   categorias: IconFolders,
   trilhas: IconRoute,
+  conquistas: IconTrophy,
+  gamificacao: IconSparkles,
 };
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };
@@ -89,12 +94,16 @@ export function AppShell({
   user,
   theme,
   logoutAction,
+  notifications,
+  markNotificationsRead,
   children,
 }: {
   sections: NavSection[];
   user: ShellUser;
   theme: ThemePreference;
   logoutAction: () => Promise<void>;
+  notifications: { unread: number; items: NotificationItem[] };
+  markNotificationsRead: () => Promise<void>;
   children: ReactNode;
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -161,6 +170,7 @@ export function AppShell({
             </div>
             <form ref={logoutFormRef} action={logoutAction} hidden />
             <div className="ml-auto flex items-center gap-1">
+              <NotificationBell items={notifications.items} unread={notifications.unread} markRead={markNotificationsRead} />
               <ThemeToggle initial={theme} />
               <Menu.Root>
                 <Menu.Trigger

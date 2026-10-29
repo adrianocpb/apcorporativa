@@ -10,6 +10,12 @@ export const db: Db = createDbClient(TEST_DATABASE_URL);
 
 // Ordem respeita as chaves estrangeiras.
 const TABLES = [
+  "Notification",
+  "UserAchievement",
+  "Achievement",
+  "PointTransaction",
+  "PointRule",
+  "Level",
   "CompletionRecord",
   "ContentProgress",
   "Enrollment",

@@ -11,6 +11,7 @@ import {
   type RuleItem,
   type TrackComputation,
 } from "@/lib/learning/rules";
+import { rewardProgress, type ProgressReward } from "@/server/services/gamification";
 
 // Progresso do colaborador nas trilhas. Toda regra é aplicada aqui, no servidor:
 // a interface só mostra o que este serviço calcula.
@@ -66,6 +67,7 @@ export async function syncTrackEnrollments(db: DbOrTx, trackId: string) {
   const missing = [...targeted].filter((id) => !byUser.has(id));
   if (missing.length) {
     await db.enrollment.createMany({ data: missing.map((userId) => ({ trackId, userId })) });
+    await notifyNewTrack(db, trackId, missing);
   }
   for (const e of existing) {
     if (targeted.has(e.userId) && e.removedAt) {
@@ -74,6 +76,20 @@ export async function syncTrackEnrollments(db: DbOrTx, trackId: string) {
       await db.enrollment.update({ where: { id: e.id }, data: { removedAt: new Date() } });
     }
   }
+}
+
+async function notifyNewTrack(db: DbOrTx, trackId: string, userIds: string[]) {
+  const track = await db.track.findUnique({ where: { id: trackId }, select: { title: true } });
+  if (!track || !userIds.length) return;
+  await db.notification.createMany({
+    data: userIds.map((userId) => ({
+      userId,
+      type: "trilha",
+      title: `Nova trilha: ${track.title}`,
+      body: "Uma trilha foi atribuída a você.",
+      link: `/trilhas/${trackId}`,
+    })),
+  });
 }
 
 /** Sincroniza as trilhas ligadas a grupos (após mudanças de membros). */
@@ -210,7 +226,10 @@ async function syncUserEnrollments(db: DbOrTx, userId: string) {
   const existing = await db.enrollment.findMany({ where: { userId } });
   for (const trackId of trackIds) {
     const e = existing.find((x) => x.trackId === trackId);
-    if (!e) await db.enrollment.create({ data: { trackId, userId } });
+    if (!e) {
+      await db.enrollment.create({ data: { trackId, userId } });
+      await notifyNewTrack(db, trackId, [userId]);
+    }
     else if (e.removedAt) await db.enrollment.update({ where: { id: e.id }, data: { removedAt: null } });
   }
 }
@@ -341,6 +360,7 @@ export type CompletionEvents = {
   contentCompleted: boolean;
   modulesCompleted: string[];
   trackCompleted: boolean;
+  reward?: ProgressReward;
 };
 
 async function loadAvailableItem(db: DbOrTx, userId: string, trackId: string, itemId: string) {
@@ -422,10 +442,18 @@ async function completeItem(
   const enrollments = await db.enrollment.findMany({
     where: { userId, status: { not: "COMPLETED" }, track: { modules: { some: { items: { some: { contentId } } } } } },
   });
+  const completedModules: { id: string; title: string }[] = [];
+  const completedTracks: { id: string; title: string }[] = [];
   for (const e of enrollments) {
-    const { result } = await computeTrackForUsers(db, e.trackId, [userId]);
+    const { structure, result } = await computeTrackForUsers(db, e.trackId, [userId]);
     const state = result.get(userId)!;
+    // Pontos por etapa e trilha são idempotentes: basta informar todas as concluídas.
+    for (const m of state.modules.filter((x) => x.completed)) {
+      const mod = structure.modules.find((x) => x.id === m.id);
+      if (mod) completedModules.push({ id: mod.id, title: mod.title });
+    }
     if (state.completed) {
+      completedTracks.push({ id: structure.id, title: structure.title });
       await db.enrollment.update({
         where: { id: e.id },
         data: { status: "COMPLETED", completedAt: now, lastActivityAt: now, startedAt: e.startedAt ?? now },
@@ -436,6 +464,13 @@ async function completeItem(
       events.modulesCompleted = state.modules.filter((m) => m.completed && !beforeModules.has(m.id)).map((m) => m.id);
     }
   }
+
+  const content = await db.content.findUnique({ where: { id: contentId }, select: { id: true, title: true, type: true } });
+  events.reward = await rewardProgress(db, userId, {
+    content: events.contentCompleted ? content : null,
+    modules: completedModules,
+    tracks: completedTracks,
+  });
   return events;
 }
 

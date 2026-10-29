@@ -7,6 +7,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Alert } from "@/components/ui/feedback";
 import { toast } from "@/components/ui/toaster";
 import { confirmItemAction, openItemAction } from "@/app/(app)/trilhas/actions";
+import { announceReward } from "./reward";
 
 /**
  * Registra a abertura do conteúdo e oferece a ação de conclusão conforme a regra:
@@ -46,6 +47,7 @@ export function ItemTracker({
       if (!r.ok) setError(r.message ?? null);
       else if (r.data?.events) {
         if (r.data.events.trackCompleted) toast("Parabéns! Você concluiu a trilha.");
+        announceReward(r.data.events.reward);
         router.refresh();
       }
     });
@@ -66,6 +68,7 @@ export function ItemTracker({
         return;
       }
       toast(r.data?.events.trackCompleted ? "Parabéns! Você concluiu a trilha." : "Conteúdo concluído.");
+      announceReward(r.data?.events.reward);
       router.refresh();
     });
   }

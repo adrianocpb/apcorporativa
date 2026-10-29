@@ -3,7 +3,10 @@ import { AppShell, type NavSection } from "@/components/layout/app-shell";
 import type { ThemePreference } from "@/components/layout/theme-toggle";
 import { requireUser } from "@/server/auth/current-user";
 import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
-import { logoutAction } from "./actions";
+import { db } from "@/server/db";
+import { listNotifications } from "@/server/services/gamification";
+import { formatDateTime } from "@/lib/format";
+import { logoutAction, markNotificationsReadAction } from "./actions";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const user = await requireUser();
@@ -17,6 +20,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       items: [
         { href: "/", label: "Painel", icon: "painel", exact: true },
         { href: "/trilhas", label: "Minhas trilhas", icon: "trilhas" },
+        { href: "/conquistas", label: "Conquistas", icon: "conquistas" },
         { href: "/minha-conta", label: "Minha conta", icon: "conta" },
       ],
     },
@@ -27,6 +31,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     ];
     if (hasPermission(user, PERMISSIONS.TRILHAS_GERENCIAR))
       adminItems.push({ href: "/admin/trilhas", label: "Trilhas", icon: "trilhas" });
+    if (hasPermission(user, PERMISSIONS.GAMIFICACAO_CONFIGURAR))
+      adminItems.push({ href: "/admin/gamificacao", label: "Gamificação", icon: "gamificacao" });
     if (hasPermission(user, PERMISSIONS.CONTEUDOS_GERENCIAR))
       adminItems.push({ href: "/admin/conteudos", label: "Conteúdos", icon: "conteudos" });
     if (hasPermission(user, PERMISSIONS.CATEGORIAS_GERENCIAR))
@@ -40,12 +46,26 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     sections.push({ title: "Administração", items: adminItems });
   }
 
+  const notifications = await listNotifications(db, user);
+
   return (
     <AppShell
       sections={sections}
       user={{ name: user.name, email: user.email, roleName: user.roleName }}
       theme={theme}
       logoutAction={logoutAction}
+      notifications={{
+        unread: notifications.unread,
+        items: notifications.items.map((n) => ({
+          id: n.id,
+          title: n.title,
+          body: n.body,
+          link: n.link,
+          read: !!n.readAt,
+          createdAt: formatDateTime(n.createdAt),
+        })),
+      }}
+      markNotificationsRead={markNotificationsReadAction}
     >
       {children}
     </AppShell>

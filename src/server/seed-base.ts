@@ -5,6 +5,7 @@ import {
   type PermissionKey,
   type RoleKey,
 } from "@/server/auth/permissions";
+import { seedGamificationDefaults } from "@/server/services/gamification";
 
 // Dados estruturais obrigatórios (papéis e permissões). Idempotente e sem usuários:
 // o primeiro administrador é criado por `npm run admin:criar`.
@@ -39,4 +40,6 @@ export async function seedBase(db: Db) {
       });
     }
   }
+
+  await seedGamificationDefaults(db);
 }

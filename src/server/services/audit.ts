@@ -66,6 +66,13 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "trilha.estrutura_alterada": "Estrutura da trilha alterada",
   "trilha.atribuida": "Trilha atribuída",
   "trilha.atribuicao_removida": "Atribuição de trilha removida",
+  "gamificacao.regras_alteradas": "Regras de pontuação alteradas",
+  "gamificacao.nivel_criado": "Nível criado",
+  "gamificacao.nivel_editado": "Nível editado",
+  "gamificacao.nivel_excluido": "Nível excluído",
+  "gamificacao.conquista_criada": "Conquista criada",
+  "gamificacao.conquista_editada": "Conquista editada",
+  "gamificacao.pontos_ajustados": "Pontos ajustados manualmente",
 };
 
 export const AUDIT_PAGE_SIZE = 30;

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ProgressBar } from "@/components/ui/feedback";
 import { toast } from "@/components/ui/toaster";
+import { announceReward, type Reward } from "./reward";
 
 const SEND_EVERY_SECONDS = 10;
 
@@ -55,7 +56,12 @@ export function TrackedVideoPlayer({
           keepalive: true,
         });
         if (!res.ok) return;
-        const data = (await res.json()) as { coverage: number; completed: boolean };
+        const data = (await res.json()) as {
+          coverage: number;
+          completed: boolean;
+          events: { reward?: Reward } | null;
+        };
+        announceReward(data.events?.reward);
         setCoverage(data.coverage);
         if (data.completed) {
           setCompleted((was) => {

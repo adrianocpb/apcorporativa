@@ -1,4 +1,4 @@
-// Modelo de dados — Fase 1 (identidade, acesso e auditoria), Fase 2 (conteúdo) e Fase 3 (trilhas).
+// Modelo de dados — Fases 1 (acesso), 2 (conteúdo), 3 (trilhas) e 4 (gamificação).
 // Documentação: docs/MODELO-DE-DADOS.md
 // Validação em SQLite; o schema evita recursos exclusivos do SQLite para migrar a PostgreSQL.
 
@@ -84,6 +84,10 @@ model User {
   enrollments       Enrollment[]
   contentProgress   ContentProgress[]
   completions       CompletionRecord[]
+  pointTransactions PointTransaction[] @relation("PointsOwner")
+  pointAdjustments  PointTransaction[] @relation("PointsAdjuster")
+  achievements      UserAchievement[]
+  notifications     Notification[]
 
   @@index([status])
   @@index([department])
@@ -485,4 +489,93 @@ model CompletionRecord {
 
   @@unique([userId, contentVersionId])
   @@index([userId, contentId])
+}
+
+// ---------------------------------------------------------------------------
+// Fase 4 — gamificação
+// ---------------------------------------------------------------------------
+
+enum PointEvent {
+  CONTENT_VIDEO // concluir um vídeo
+  CONTENT_READING // concluir PDF, manual/artigo ou FAQ
+  CONTENT_OTHER // concluir imagem ou link
+  MODULE_COMPLETED // finalizar uma etapa
+  TRACK_COMPLETED // finalizar uma trilha
+  ACHIEVEMENT // bônus de conquista
+  MANUAL_ADJUSTMENT // ajuste feito por administrador, com motivo
+}
+
+// Níveis configuráveis por pontos acumulados.
+model Level {
+  id        String   @id @default(cuid())
+  number    Int      @unique
+  name      String
+  minPoints Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Valor de cada evento que gera pontos.
+model PointRule {
+  id        String     @id @default(cuid())
+  event     PointEvent @unique
+  points    Int
+  active    Boolean    @default(true)
+  updatedAt DateTime   @updatedAt
+}
+
+// Livro-razão de pontos: somente inserção. A restrição única impede pontuar duas
+// vezes o mesmo fato (mesmo conteúdo, etapa, trilha ou conquista).
+model PointTransaction {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation("PointsOwner", fields: [userId], references: [id], onDelete: Cascade)
+  event       PointEvent
+  points      Int
+  sourceType  String // conteudo, etapa, trilha, conquista, ajuste
+  sourceId    String
+  description String
+  createdById String?
+  createdBy   User?      @relation("PointsAdjuster", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+
+  @@unique([userId, event, sourceType, sourceId])
+  @@index([userId, createdAt])
+}
+
+model Achievement {
+  id          String            @id @default(cuid())
+  key         String            @unique
+  name        String
+  description String
+  criteria    Json // { tipo: CONTENTS_COMPLETED | TRACKS_COMPLETED | ONBOARDING_COMPLETED | TRACK_COMPLETED, ... }
+  points      Int               @default(0)
+  active      Boolean           @default(true)
+  users       UserAchievement[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model UserAchievement {
+  userId        String
+  achievementId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  awardedAt     DateTime    @default(now())
+
+  @@id([userId, achievementId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // nivel, conquista, trilha
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
 }

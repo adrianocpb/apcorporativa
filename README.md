@@ -2,7 +2,7 @@
 
 Plataforma interna de gestão do conhecimento e aprendizagem: onboarding de novos colaboradores, trilhas de treinamento, Central de Conhecimento e gamificação.
 
-> **Status:** Fases 1 a 3 concluídas — autenticação, usuários, grupos, auditoria, design system, gestão de conteúdo (vídeos, PDFs, manuais, FAQ, versões) e trilhas de aprendizagem com desbloqueio sequencial, progresso validado no servidor e acompanhamento. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+> **Status:** Fases 1 a 4 concluídas — acesso e usuários, gestão de conteúdo, trilhas de aprendizagem com progresso validado no servidor e gamificação (pontos, níveis, conquistas e notificações). Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
 
 ## Stack
 
@@ -60,6 +60,10 @@ Em **Administração → Conteúdos**: vídeos (MP4/WebM), PDFs, imagens, artigo
 ## Trilhas
 
 Em **Administração → Trilhas**: crie a trilha, monte as etapas arrastando os conteúdos, defina o que é obrigatório e como cada item é concluído (assistir ao vídeo, confirmar leitura ou abrir), atribua a pessoas ou grupos e publique. A aba **Pessoas e progresso** mostra onde cada um parou. O colaborador vê a próxima ação no **Painel** e segue em **Minhas trilhas**.
+
+## Gamificação
+
+Cada conteúdo, etapa e trilha concluídos geram pontos uma única vez; os pontos definem o nível e as conquistas são atribuídas automaticamente. Em **Administração → Gamificação** o administrador ajusta os valores, os níveis e as conquistas e consulta o histórico de pontos. O colaborador vê nível e pontos no **Painel**, detalhes em **Conquistas** e avisos no sino de notificações. Não há ranking entre colaboradores.
 
 ## Documentação
 

@@ -7,6 +7,7 @@ import { runAction, type ActionState } from "@/server/actions";
 import { clearSessionCookie, getRequestMeta, requireSession } from "@/server/auth/current-user";
 import { SESSION_COOKIE, invalidateSessionToken } from "@/server/auth/sessions";
 import { changeOwnPassword } from "@/server/services/auth";
+import { markNotificationsRead } from "@/server/services/gamification";
 import { AppError } from "@/server/errors";
 import { formToObject, parseInput } from "@/server/validation";
 import { newPasswordSchema } from "@/lib/validation/users";
@@ -16,6 +17,11 @@ export async function logoutAction() {
   if (token) await invalidateSessionToken(db, token);
   await clearSessionCookie();
   redirect("/entrar");
+}
+
+export async function markNotificationsReadAction() {
+  const session = await requireSession();
+  await markNotificationsRead(db, session.user);
 }
 
 export async function changePasswordAction(

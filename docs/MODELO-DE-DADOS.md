@@ -71,6 +71,18 @@ User 1─N ContentProgress (por versão de conteúdo) · User 1─N CompletionRe
 - Mudança relevante numa versão posterior reabre o item em trilhas **em andamento**; trilha já concluída não é reaberta.
 - Trilha concluída e conteúdos continuam visíveis para revisão mesmo após arquivamento da trilha ou remoção da atribuição.
 
+## Fase 4 — gamificação
+
+| Entidade | Finalidade | Regras |
+| --- | --- | --- |
+| `Level` | Níveis | `minPoints` único; `number` recalculado pela ordem de pontos; o primeiro nível começa em 0 e não pode ser excluído. Nível não é gravado por pessoa: é calculado pelo total de pontos, então mudar níveis vale para todos na hora. |
+| `PointRule` | Valor por evento | Um por evento (`CONTENT_VIDEO`, `CONTENT_READING`, `CONTENT_OTHER`, `MODULE_COMPLETED`, `TRACK_COMPLETED`); pode ser desativado. |
+| `PointTransaction` | Livro-razão | **Somente inserção.** Único por (pessoa, evento, tipo de origem, origem): o mesmo conteúdo/etapa/trilha/conquista pontua uma vez. Ajuste manual é um novo lançamento (positivo ou negativo) com motivo e autor. Total = soma dos lançamentos. |
+| `Achievement` / `UserAchievement` | Conquistas | Critério em JSON validado; atribuição automática e única por pessoa. |
+| `Notification` | Avisos | Novo nível, nova conquista, nova trilha atribuída; lidas ao abrir o sino. |
+
+Pontos de conteúdo são por **conteúdo** (não por versão): reconcluir após mudança relevante não pontua de novo. Mudar o valor de uma regra não recalcula pontos já concedidos.
+
 ## Regras de integridade
 
 - Chaves estrangeiras ativas no SQLite (verificado em teste).

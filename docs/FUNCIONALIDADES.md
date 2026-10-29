@@ -48,9 +48,20 @@
 - [x] Mudança relevante de conteúdo reabre o item só em trilhas em andamento; histórico de conclusão somente inserção
 - [x] Progresso por pessoa na trilha (percentual, onde parou, última atividade); auditoria das operações
 
+## Implementadas — Fase 4 (Gamificação)
+
+- [x] Pontos por concluir vídeo, leitura (PDF/manual/FAQ), imagem ou link, finalizar etapa e finalizar trilha — valores e ativação configuráveis
+- [x] Livro-razão de pontos somente inserção, com origem, data, quantidade e evento; sem pontos repetidos ao rever ou reconcluir (restrição única no banco, testada com conclusões simultâneas)
+- [x] Níveis configuráveis por pontos (padrão: Explorador, Aprendiz, Praticante, Especialista, Multiplicador de Conhecimento)
+- [x] Painel com nível, pontos, pontos para o próximo nível e barra de progresso
+- [x] Conquistas automáticas por critério (quantidade de conteúdos, quantidade de trilhas, onboarding concluído, trilha específica), com bônus opcional
+- [x] Página de conquistas e histórico de pontos do colaborador
+- [x] Notificações: novo nível, nova conquista, nova trilha atribuída
+- [x] Ajuste manual de pontos com motivo (novo lançamento, auditado); colaborador não altera pontos nem níveis
+- [x] Sem ranking público
+
 ## Pendentes (próximas fases)
 
-- [ ] **Fase 4 — Gamificação:** pontos, níveis, conquistas, notificações
 - [ ] **Fase 5 — Central de Conhecimento:** busca, filtros, favoritos, mais acessados
 - [ ] **Fase 6 — Relatórios:** indicadores, progresso individual, exportação CSV
 - [ ] Prazo (data limite) nas atribuições de trilha — o campo já existe no banco
