@@ -10,6 +10,7 @@ export const PERMISSIONS = {
   CATEGORIAS_GERENCIAR: "categorias.gerenciar",
   TRILHAS_GERENCIAR: "trilhas.gerenciar",
   GAMIFICACAO_CONFIGURAR: "gamificacao.configurar",
+  RELATORIOS_VER: "relatorios.ver",
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -23,6 +24,7 @@ export const PERMISSION_DESCRIPTIONS: Record<PermissionKey, string> = {
   "categorias.gerenciar": "Organizar as categorias da Central de Conhecimento",
   "trilhas.gerenciar": "Criar trilhas, atribuí-las e acompanhar o progresso",
   "gamificacao.configurar": "Configurar pontos, níveis e conquistas e ajustar pontuações",
+  "relatorios.ver": "Consultar indicadores, progresso individual e exportar relatórios",
 };
 
 export const ROLE_KEYS = {

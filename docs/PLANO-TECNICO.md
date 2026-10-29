@@ -1,6 +1,6 @@
 # Plataforma Corporativa de Gestão do Conhecimento e Aprendizagem — Diagnóstico e Plano Técnico
 
-> Status: **aprovado** em 29/10/2026. Fase 1 implementada — ver [FUNCIONALIDADES.md](FUNCIONALIDADES.md).
+> Status: **aprovado** em 29/10/2026. Fases 1 a 6 implementadas — ver [FUNCIONALIDADES.md](FUNCIONALIDADES.md).
 > Data: 29/10/2026
 
 ---

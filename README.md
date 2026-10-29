@@ -2,7 +2,7 @@
 
 Plataforma interna de gestão do conhecimento e aprendizagem: onboarding de novos colaboradores, trilhas de treinamento, Central de Conhecimento e gamificação.
 
-> **Status:** Fases 1 a 5 concluídas — acesso e usuários, gestão de conteúdo, trilhas com progresso validado no servidor, gamificação e Central de Conhecimento (busca, filtros, favoritos, mais acessados). Falta a Fase 6 (relatórios). Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+> **Status:** MVP completo (Fases 1 a 6) — acesso e usuários, gestão de conteúdo, trilhas com progresso validado no servidor, gamificação, Central de Conhecimento e relatórios com exportação CSV. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
 
 ## Stack
 
@@ -70,6 +70,10 @@ Cada conteúdo, etapa e trilha concluídos geram pontos uma única vez; os ponto
 
 Em **Central de Conhecimento** qualquer pessoa busca por título e texto (sem depender de acentos: "ferias" encontra "férias"), filtra por tipo e categoria, vê perguntas frequentes em lista expansível, marca favoritos e encontra os conteúdos que já concluiu nas trilhas. A busca também fica na barra superior de todas as páginas.
 
+## Relatórios
+
+Em **Administração → Relatórios**: usuários ativos, trilhas publicadas, atribuições, taxa de conclusão, pendências, onboarding concluído, tempo de conclusão (mediana), conclusão por trilha e por área e conteúdos mais acessados — com filtros por trilha, área, pessoa e período e exportação CSV (abre direto no Excel). A aba **Progresso por pessoa** mostra onde cada um parou, e cada pessoa tem uma página de acompanhamento individual com histórico de aprendizagem. A auditoria também pode ser exportada.
+
 ## Documentação
 
 | Documento | Conteúdo |
@@ -81,4 +85,5 @@ Em **Central de Conhecimento** qualquer pessoa busca por título e texto (sem de
 | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | Tokens, componentes e padrões de interface |
 | [docs/TESTES.md](docs/TESTES.md) | Estratégia e cobertura dos testes |
 | [docs/BACKUP.md](docs/BACKUP.md) | Backup e restauração |
+| [docs/IMPLANTACAO.md](docs/IMPLANTACAO.md) | Servidor, HTTPS, atualizações e caminho para produção |
 | [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) | Implementado e pendente |

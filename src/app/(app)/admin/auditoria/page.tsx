@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { IconFileSearch, IconFilter } from "@tabler/icons-react";
+import { IconDownload, IconFileSearch, IconFilter } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
 import { PERMISSIONS } from "@/server/auth/permissions";
 import { AUDIT_ACTION_LABELS, listAuditLogs } from "@/server/services/audit";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink, buttonClasses } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { Select } from "@/components/ui/field";
@@ -53,6 +53,13 @@ export default async function AuditPage({ searchParams }: PageProps<"/admin/audi
               Limpar
             </ButtonLink>
           )}
+          <a
+            href={`/api/relatorios/auditoria${action ? `?acao=${encodeURIComponent(action)}` : ""}`}
+            className={buttonClasses("outline")}
+            download
+          >
+            <IconDownload aria-hidden="true" /> CSV
+          </a>
         </form>
         {result.items.length === 0 ? (
           <EmptyState icon={<IconFileSearch />} title="Nenhum registro encontrado" />

@@ -52,6 +52,12 @@
 - Rota de progresso exige sessão e mesma origem; conclusão é idempotente (restrição única).
 - Limitação conhecida: um usuário mal-intencionado pode simular sinais de vídeo em tempo real (deixando a página tocar). O controle torna a fraude tão demorada quanto assistir.
 
+## Relatórios e exportação
+
+- Relatórios e CSV exigem a permissão `relatorios.ver` (auditoria: `auditoria.ver`); a rota de exportação valida sessão e permissão como as telas.
+- Células CSV que começam com =, +, - ou @ recebem um apóstrofo (evita execução de fórmulas no Excel).
+- Os arquivos exportados contêm dados pessoais (nome, e-mail, área): trate-os conforme a política de privacidade da empresa (LGPD).
+
 ## Segredos e dados
 
 - `.env` fora do Git; `.env.example` sem valores reais.

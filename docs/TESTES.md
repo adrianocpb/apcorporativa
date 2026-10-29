@@ -10,7 +10,7 @@ npm run test:watch
 - Os serviços são testados diretamente (sem navegador), o que cobre também chamadas diretas às Server Actions.
 - A CI (GitHub Actions) roda lint, tipos, testes e build a cada push.
 
-## Cobertura atual — 113 testes
+## Cobertura atual — 121 testes
 
 | Arquivo | Fluxos críticos cobertos |
 | --- | --- |
@@ -25,6 +25,7 @@ npm run test:watch
 | `tests/integration/tracks.test.ts` | Bloqueio de etapas futuras e **desbloqueio após conclusão válida** (inclusive chamadas diretas recusadas); tempo mínimo de leitura; **conclusão sem duplicidade**; vídeo concluído só com trechos assistidos e duração lida do MP4; **persistência e retomada**; mudança relevante; **acesso após a conclusão** com trilha arquivada; atribuição por grupo e remoção preservando histórico; relatório de progresso; permissões |
 | `tests/integration/gamification.test.ts` | Pontos por conteúdo, etapa e trilha com origem; **sem pontuação duplicada** ao rever, reconfirmar, reconcluir ou em conclusões simultâneas; regras configuráveis; cálculo e aviso de novo nível; reorganização de níveis; conquistas automáticas e por trilha; ajuste manual auditado; colaborador não altera pontos; notificação de trilha atribuída |
 | `tests/integration/library.test.ts` | Busca sem acentos, por prefixo e por relevância; trecho destacado sem HTML; entradas maliciosas na busca; só publicado e da biblioteca, acompanhando nova versão e arquivamento; filtros por tipo e categoria; reconstrução do índice; acessos sem inflar e mais acessados; favoritos; **acesso a conteúdo após concluir** e conteúdo só de trilha restrito; rascunho/arquivado bloqueados; categorias com contagem |
+| `tests/integration/reports.test.ts` | Indicadores (atribuições, conclusão, pendências, onboarding, taxas por trilha e área), filtros por área/trilha/período, mais acessados, mediana; progresso por pessoa e onde parou; acompanhamento individual; permissões; CSV (separador, escape, proteção contra fórmulas); leitura de filtros |
 | `tests/integration/categories.test.ts` | Árvore em dois níveis, nomes por nível, reordenação, arquivamento hierárquico, permissões |
 
 ## Validação manual feita na Fase 1
@@ -46,6 +47,10 @@ Painel com nível e pontos; inclusão de um link em trilha já concluída (a tri
 ## Validação manual feita na Fase 5
 
 Busca "ferias" encontrando "Política de férias 2026"; busca por texto do artigo com trecho destacado; índice reconstruído automaticamente para conteúdos publicados antes da Fase 5; página do conteúdo com "você concluiu" e "nas suas trilhas"; favoritar; página inicial com favoritos, vistos recentemente, mais acessados, recentes e categorias com contagem.
+
+## Validação manual feita na Fase 6
+
+Indicadores com dados reais de teste; exportações progresso, trilhas, histórico e auditoria (status 200, BOM UTF-8, cabeçalhos em português, datas pt-BR); progresso por pessoa e página de acompanhamento individual.
 
 ## Próximas fases
 

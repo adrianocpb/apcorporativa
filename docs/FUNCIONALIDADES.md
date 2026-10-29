@@ -72,9 +72,18 @@
 - [x] Conteúdo só de trilha acessível a quem tem a trilha ou já concluiu; rascunho e arquivado nunca aparecem
 - [x] Índice de busca atualizado ao publicar/arquivar/excluir e reconstruível (`npm run search:reindex`)
 
-## Pendentes (próximas fases)
+## Implementadas — Fase 6 (Administração e relatórios)
 
-- [ ] **Fase 6 — Relatórios:** indicadores, progresso individual, exportação CSV
+- [x] Indicadores: usuários ativos, trilhas publicadas, atribuições, taxa de conclusão, pendências, onboarding concluído, tempo de conclusão (mediana, do primeiro acesso à conclusão), conteúdos mais acessados
+- [x] Conclusão por trilha (atribuídas, não iniciadas, em andamento, concluídas, taxa, tempo) e por área
+- [x] Filtros por trilha, área, pessoa e período
+- [x] Progresso por pessoa (percentual e onde parou) e acompanhamento individual (trilhas, pontos, conquistas, histórico de aprendizagem)
+- [x] Histórico de conclusões
+- [x] Exportação CSV (progresso, trilhas, histórico, auditoria) com proteção contra fórmulas e acentuação correta no Excel
+- [x] Guia de implantação (servidor, HTTPS, atualizações, caminho para produção)
+
+## Pendentes / evoluções sugeridas
+
 - [ ] Prazo (data limite) nas atribuições de trilha — o campo já existe no banco
 - [ ] Teste automatizado de ponta a ponta no navegador (Playwright)
 - [ ] Escopo de permissão por categoria (gestor de conteúdo de uma área)

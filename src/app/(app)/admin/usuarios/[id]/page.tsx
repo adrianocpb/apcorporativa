@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { IconKey, IconMailForward, IconUserCheck, IconUserOff } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
-import { PERMISSIONS } from "@/server/auth/permissions";
+import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
+import Link from "next/link";
 import { NotFoundError } from "@/server/errors";
 import { getUser, listDepartments } from "@/server/services/users";
 import { listGroupOptions } from "@/server/services/groups";
@@ -77,6 +78,11 @@ export default async function UserDetailPage({ params }: PageProps<"/admin/usuar
                 <dt className="text-small text-ink-muted">Último acesso</dt>
                 <dd className="text-ink">{formatDateTime(user.lastLoginAt)}</dd>
               </dl>
+              {hasPermission(actor, PERMISSIONS.RELATORIOS_VER) && (
+                <Link href={`/admin/relatorios/pessoas/${user.id}`} className="text-small text-primary-text hover:underline">
+                  Ver trilhas, progresso e histórico de aprendizagem
+                </Link>
+              )}
             </CardBody>
           </Card>
 

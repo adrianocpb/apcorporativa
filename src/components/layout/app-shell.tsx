@@ -18,6 +18,7 @@ import {
   IconTrophy,
   IconSparkles,
   IconBooks,
+  IconReportAnalytics,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
@@ -43,6 +44,7 @@ const ICONS = {
   conquistas: IconTrophy,
   gamificacao: IconSparkles,
   biblioteca: IconBooks,
+  relatorios: IconReportAnalytics,
 };
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };
