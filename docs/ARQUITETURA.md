@@ -77,6 +77,13 @@ O SQLite atende um piloto com dezenas de usuários em **um único servidor**. Pa
 - **Produção:** implementar `StorageProvider` para S3-compatível (MinIO, R2, S3) e trocar em `getStorage()`. O restante do código não muda.
 - O proxy não atua em `/api` para não bufferizar uploads grandes; as rotas de API fazem a própria autenticação (401) e a verificação de origem (403).
 
+## Trilhas e progresso (Fase 3)
+
+- `src/lib/learning/rules.ts`: regras puras (estado de cada item, desbloqueio, validação de trechos de vídeo), testadas isoladamente.
+- `src/server/services/learning.ts`: colaborador (matrículas, estado da trilha, abrir/concluir, sinais de vídeo). `src/server/services/tracks.ts`: administração (estrutura, publicação, atribuições, relatório).
+- O player envia sinais para `POST /api/progresso/video` a cada ~10 s, na pausa, ao pular e ao sair da página (sendBeacon). Abrir e confirmar usam Server Actions.
+- A abertura é registrada por efeito no navegador (não na renderização), para que pré-carregamentos não contem como acesso.
+
 ## Conteúdo e editor
 
 - Artigos e FAQs são editados com **Tiptap**; o documento é salvo em JSON e o servidor gera o HTML com `renderRichText`, que só aceita elementos e atributos conhecidos (títulos, parágrafos, listas, negrito, itálico, sublinhado, links http/https/mailto, imagens da própria plataforma com legenda, tabelas, destaque e linha divisória). O mesmo código gera o texto puro para a busca (Fase 5) e a lista de imagens incorporadas (controle de acesso).

@@ -47,6 +47,30 @@ ContentVersion N─M StoredFile (imagens no texto, via ContentVersionAsset)
 - Mudança relevante (`requiresRecompletion`): as conclusões anteriores **não** são apagadas; a Fase 3 usará a marca para pedir nova conclusão nas trilhas em andamento.
 - Excluir só é permitido para conteúdo que nunca foi publicado. Publicados são arquivados.
 
+## Fase 3 — trilhas e progresso
+
+```
+Track 1─N TrackModule 1─N TrackItem N─1 Content
+Track 1─N TrackAssignment (pessoa OU grupo) · Track 1─N Enrollment (pessoa)
+User 1─N ContentProgress (por versão de conteúdo) · User 1─N CompletionRecord (histórico)
+```
+
+| Entidade | Finalidade | Regras |
+| --- | --- | --- |
+| `Track` | Trilha | DRAFT/PUBLISHED/ARCHIVED; `sequential`, `isOnboarding`, `videoThresholdPct` (padrão 90), `minReadSeconds` (padrão 30). |
+| `TrackModule` / `TrackItem` | Etapas e conteúdos | Ordem por `position`. Item aponta para o conteúdo (sem cópia), com `required` e `completionRule` (WATCH, CONFIRM, VIEW). Um conteúdo aparece uma vez por trilha. Conteúdo em uso não pode ser apagado (Restrict). |
+| `TrackAssignment` | Atribuição | Única por (trilha, pessoa) e (trilha, grupo). |
+| `Enrollment` | Matrícula materializada | Única por (trilha, pessoa). Criada ao publicar/atribuir/entrar no grupo. Nunca apagada: `removedAt` marca quem perdeu a atribuição antes de concluir. Guarda status, início, conclusão e `lastItemId` (onde parou). |
+| `ContentProgress` | Progresso por versão | Abertura, posição do vídeo, intervalos assistidos validados, última atividade. Independe da trilha: concluir um conteúdo vale em todas as trilhas que o usam. |
+| `CompletionRecord` | Histórico de aprendizagem | **Somente inserção**, único por (pessoa, versão): evita conclusão (e pontuação) duplicada. Método e evidência registrados. |
+
+### Regras de progresso
+
+- Sequencial: item disponível quando todos os obrigatórios anteriores estão concluídos, ou se já foi iniciado (reordenar nunca rebloqueia).
+- Conteúdo arquivado deixa de contar e some para quem não o concluiu.
+- Mudança relevante numa versão posterior reabre o item em trilhas **em andamento**; trilha já concluída não é reaberta.
+- Trilha concluída e conteúdos continuam visíveis para revisão mesmo após arquivamento da trilha ou remoção da atribuição.
+
 ## Regras de integridade
 
 - Chaves estrangeiras ativas no SQLite (verificado em teste).

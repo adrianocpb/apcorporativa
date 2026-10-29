@@ -2,7 +2,7 @@
 
 Plataforma interna de gestão do conhecimento e aprendizagem: onboarding de novos colaboradores, trilhas de treinamento, Central de Conhecimento e gamificação.
 
-> **Status:** Fases 1 (Fundação) e 2 (Gestão de conteúdo) concluídas — autenticação, usuários, grupos, auditoria, design system, upload de vídeos/PDFs/imagens, editor de manuais, FAQ, categorias, publicação e versionamento. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+> **Status:** Fases 1 a 3 concluídas — autenticação, usuários, grupos, auditoria, design system, gestão de conteúdo (vídeos, PDFs, manuais, FAQ, versões) e trilhas de aprendizagem com desbloqueio sequencial, progresso validado no servidor e acompanhamento. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
 
 ## Stack
 
@@ -56,6 +56,10 @@ Não há envio de e-mail nesta versão (decisão D5); a integração SMTP pode s
 ## Conteúdos
 
 Em **Administração → Conteúdos**: vídeos (MP4/WebM), PDFs, imagens, artigos/manuais escritos no editor, perguntas frequentes e links externos. Cada conteúdo é salvo como rascunho, pré-visualizado e publicado; editar algo publicado cria uma nova versão sem tirar a atual do ar, e o histórico de versões fica preservado. **Categorias** organizam a Central de Conhecimento em dois níveis.
+
+## Trilhas
+
+Em **Administração → Trilhas**: crie a trilha, monte as etapas arrastando os conteúdos, defina o que é obrigatório e como cada item é concluído (assistir ao vídeo, confirmar leitura ou abrir), atribua a pessoas ou grupos e publique. A aba **Pessoas e progresso** mostra onde cada um parou. O colaborador vê a próxima ação no **Painel** e segue em **Minhas trilhas**.
 
 ## Documentação
 

@@ -16,6 +16,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     {
       items: [
         { href: "/", label: "Painel", icon: "painel", exact: true },
+        { href: "/trilhas", label: "Minhas trilhas", icon: "trilhas" },
         { href: "/minha-conta", label: "Minha conta", icon: "conta" },
       ],
     },
@@ -24,6 +25,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     const adminItems: NavSection["items"] = [
       { href: "/admin", label: "Visão geral", icon: "visao", exact: true },
     ];
+    if (hasPermission(user, PERMISSIONS.TRILHAS_GERENCIAR))
+      adminItems.push({ href: "/admin/trilhas", label: "Trilhas", icon: "trilhas" });
     if (hasPermission(user, PERMISSIONS.CONTEUDOS_GERENCIAR))
       adminItems.push({ href: "/admin/conteudos", label: "Conteúdos", icon: "conteudos" });
     if (hasPermission(user, PERMISSIONS.CATEGORIAS_GERENCIAR))

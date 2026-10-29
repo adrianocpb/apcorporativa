@@ -90,6 +90,7 @@ function CategoryRow({
       />
       {archived ? (
         <ConfirmActionButton
+          key="restore"
           action={archiveCategoryAction.bind(null, category.id, false)}
           label="Restaurar"
           icon={<IconRestore />}
@@ -102,6 +103,7 @@ function CategoryRow({
         />
       ) : (
         <ConfirmActionButton
+          key="archive"
           action={archiveCategoryAction.bind(null, category.id, true)}
           label="Arquivar"
           icon={<IconArchive />}

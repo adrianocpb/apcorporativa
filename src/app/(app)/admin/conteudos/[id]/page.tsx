@@ -79,6 +79,7 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
             )}
             {neverPublished ? (
               <ConfirmActionButton
+                key="delete"
                 action={deleteContentAction.bind(null, content.id)}
                 label="Excluir"
                 icon={<IconTrash />}
@@ -91,6 +92,7 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
               />
             ) : archived ? (
               <ConfirmActionButton
+                key="restore"
                 action={archiveContentAction.bind(null, content.id, false)}
                 label="Restaurar"
                 icon={<IconRestore />}
@@ -101,6 +103,7 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
               />
             ) : (
               <ConfirmActionButton
+                key="archive"
                 action={archiveContentAction.bind(null, content.id, true)}
                 label="Arquivar"
                 icon={<IconArchive />}

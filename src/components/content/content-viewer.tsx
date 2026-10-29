@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { IconDownload, IconExternalLink } from "@tabler/icons-react";
 import { buttonClasses } from "@/components/ui/button";
 import { formatBytes } from "@/lib/file-rules";
@@ -14,7 +15,16 @@ export type ViewerVersion = {
  * Exibição de um conteúdo conforme o tipo. Usado na pré-visualização do administrador
  * e, nas próximas fases, pelo colaborador (trilhas e Central de Conhecimento).
  */
-export function ContentViewer({ type, version }: { type: string; version: ViewerVersion }) {
+export function ContentViewer({
+  type,
+  version,
+  videoElement,
+}: {
+  type: string;
+  version: ViewerVersion;
+  /** Substitui o player padrão (ex.: player com registro de progresso nas trilhas). */
+  videoElement?: ReactNode;
+}) {
   const fileUrl = version.file ? `/api/arquivos/${version.file.id}` : null;
   return (
     <article className="flex flex-col gap-5">
@@ -27,7 +37,8 @@ export function ContentViewer({ type, version }: { type: string; version: Viewer
         </header>
       )}
 
-      {type === "VIDEO" && fileUrl && (
+      {type === "VIDEO" && videoElement}
+      {type === "VIDEO" && fileUrl && !videoElement && (
         <video
           controls
           preload="metadata"

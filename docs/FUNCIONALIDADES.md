@@ -34,12 +34,27 @@
 - [x] Um mesmo conteúdo serve à biblioteca e às trilhas (opção "Exibir na Central de Conhecimento")
 - [x] Auditoria das operações de conteúdo e categoria; indicadores na visão geral
 
+## Implementadas — Fase 3 (Trilhas de aprendizagem)
+
+- [x] Trilhas com etapas e conteúdos reutilizados da biblioteca (sem cópias)
+- [x] Montagem com arrastar e soltar (etapas e conteúdos), mover entre etapas, obrigatório/opcional e regra de conclusão por item
+- [x] Sequência obrigatória ou acesso livre; trilha de onboarding; percentual mínimo de vídeo (padrão 90%) e tempo mínimo de leitura configuráveis
+- [x] Rascunho, publicação, arquivamento e restauração de trilhas
+- [x] Atribuição a pessoas e grupos (novos membros do grupo recebem a trilha); remoção preserva o histórico
+- [x] Estados por item: bloqueado, disponível, em andamento, concluído — calculados no servidor
+- [x] Conclusão validada no servidor: vídeo por trechos realmente assistidos (duração do MP4 lida do arquivo), leitura com tempo mínimo, abertura para imagens/links
+- [x] Retomada do vídeo e "onde parou"; painel com "Continue de onde parou" e progresso geral
+- [x] Conteúdos concluídos continuam acessíveis, inclusive com a trilha arquivada
+- [x] Mudança relevante de conteúdo reabre o item só em trilhas em andamento; histórico de conclusão somente inserção
+- [x] Progresso por pessoa na trilha (percentual, onde parou, última atividade); auditoria das operações
+
 ## Pendentes (próximas fases)
 
-- [ ] **Fase 3 — Trilhas:** trilhas, módulos, ordenação por arrastar e soltar, atribuição a usuários/grupos, desbloqueio sequencial, progresso e retomada, conclusão validada no servidor
 - [ ] **Fase 4 — Gamificação:** pontos, níveis, conquistas, notificações
 - [ ] **Fase 5 — Central de Conhecimento:** busca, filtros, favoritos, mais acessados
 - [ ] **Fase 6 — Relatórios:** indicadores, progresso individual, exportação CSV
+- [ ] Prazo (data limite) nas atribuições de trilha — o campo já existe no banco
+- [ ] Teste automatizado de ponta a ponta no navegador (Playwright)
 - [ ] Escopo de permissão por categoria (gestor de conteúdo de uma área)
 - [ ] Limpeza de arquivos enviados e não usados em nenhum conteúdo
 - [ ] Envio de e-mail (SMTP) — fora do MVP

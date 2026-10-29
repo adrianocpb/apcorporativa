@@ -10,7 +10,7 @@ npm run test:watch
 - Os serviços são testados diretamente (sem navegador), o que cobre também chamadas diretas às Server Actions.
 - A CI (GitHub Actions) roda lint, tipos, testes e build a cada push.
 
-## Cobertura atual — 63 testes
+## Cobertura atual — 91 testes
 
 | Arquivo | Fluxos críticos cobertos |
 | --- | --- |
@@ -21,6 +21,8 @@ npm run test:watch
 | `tests/unit/rich-text.test.ts` | HTML do editor: elementos permitidos, escape de `<script>`, links `javascript:` recusados, imagens só da plataforma, tabelas |
 | `tests/integration/files.test.ts` | **Upload**: nome interno aleatório, metadados e hash; tipo conferido pelo conteúdo; vazio e acima do limite sem sobras; colaborador não envia. **Acesso seguro**: colaborador só lê arquivo de conteúdo publicado (rascunho e arquivado = 404); imagem incorporada liberada, imagem solta não |
 | `tests/integration/contents.test.ts` | Rascunho → publicação → nova versão sem tirar a vigente do ar; histórico preservado; mudança relevante; essenciais por tipo; validação de link e tipo de arquivo; substituição de arquivo; arquivar/restaurar; excluir só nunca publicado; filtro por categoria; permissões; auditoria |
+| `tests/unit/learning-rules.test.ts` | **Bloqueio/desbloqueio sequencial**, opcional, trilha livre, reordenação sem rebloqueio, conteúdo arquivado, mudança relevante; validação de trechos de vídeo (pulo, aceleração, espera, limites) |
+| `tests/integration/tracks.test.ts` | Bloqueio de etapas futuras e **desbloqueio após conclusão válida** (inclusive chamadas diretas recusadas); tempo mínimo de leitura; **conclusão sem duplicidade**; vídeo concluído só com trechos assistidos e duração lida do MP4; **persistência e retomada**; mudança relevante; **acesso após a conclusão** com trilha arquivada; atribuição por grupo e remoção preservando histórico; relatório de progresso; permissões |
 | `tests/integration/categories.test.ts` | Árvore em dois níveis, nomes por nível, reordenação, arquivamento hierárquico, permissões |
 
 ## Validação manual feita na Fase 1
@@ -31,6 +33,10 @@ Convite do primeiro admin → definição de senha → painel; cadastro com erro
 
 Categorias e subcategoria; artigo com título, negrito, lista e tabela publicado; PDF enviado pelo fluxo real (progresso, validação), erro de título preservando o arquivo, pré-visualização com PDF incorporado; entrega com Range (206) e cabeçalhos; 401 sem sessão e 403 para outra origem; edição do artigo publicado gerando a versão 2 com “exige nova conclusão” e a versão 1 como substituída.
 
+## Validação manual feita na Fase 3
+
+Criação da trilha, inclusão de PDF e artigo, reordenação com arrastar e soltar (mouse) salva no banco, atribuição a grupo, publicação; painel com "Comece por aqui"; item seguinte bloqueado na lista e por URL direta; confirmação de leitura liberada após o tempo mínimo; 50% → próximo conteúdo → trilha concluída (100%); relatório do administrador com a conclusão. Não verificado no navegador: reprodução de vídeo real (sem arquivo de vídeo de teste) e reordenação pelo teclado — ambos cobertos apenas pelos testes automatizados e pela biblioteca (dnd-kit).
+
 ## Próximas fases
 
-Bloqueio/desbloqueio de etapas, persistência de progresso, pontuação duplicada e acesso pós-conclusão entram com suas fases. Testes E2E (Playwright) entram na Fase 3, quando houver o fluxo completo do colaborador.
+Pontuação (Fase 4) e busca (Fase 5) trazem seus testes. O teste de ponta a ponta no navegador (Playwright) ficou pendente: o fluxo foi validado manualmente e pelos testes de integração dos serviços.

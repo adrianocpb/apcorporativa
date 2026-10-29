@@ -31,3 +31,22 @@ export const VERSION_STATUS: Record<string, { label: string; tone: Tone }> = {
   PUBLISHED: { label: "Vigente", tone: "success" },
   SUPERSEDED: { label: "Substituída", tone: "secondary" },
 };
+
+export const TRACK_STATUS: Record<string, { label: string; tone: Tone }> = {
+  DRAFT: { label: "Rascunho", tone: "warning" },
+  PUBLISHED: { label: "Publicada", tone: "success" },
+  ARCHIVED: { label: "Arquivada", tone: "secondary" },
+};
+
+export const COMPLETION_RULE: Record<string, string> = {
+  WATCH: "Assistir ao vídeo",
+  CONFIRM: "Confirmar leitura",
+  VIEW: "Abrir conclui",
+};
+
+export const ITEM_STATE: Record<string, { label: string; tone: Tone }> = {
+  LOCKED: { label: "Bloqueado", tone: "secondary" },
+  AVAILABLE: { label: "Disponível", tone: "info" },
+  IN_PROGRESS: { label: "Em andamento", tone: "warning" },
+  COMPLETED: { label: "Concluído", tone: "success" },
+};

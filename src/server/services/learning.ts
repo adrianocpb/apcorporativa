@@ -329,6 +329,7 @@ export async function getItemForLearner(db: Db, user: SessionUser, trackId: stri
     previous: neighbor(-1),
     next: neighbor(1),
     dwellSeconds: minDwellSeconds(item.content.type, structure.minReadSeconds),
+    secondsSinceOpen: progress ? (Date.now() - progress.openedAt.getTime()) / 1000 : null,
   };
 }
 

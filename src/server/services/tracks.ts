@@ -433,3 +433,24 @@ export async function getTrackProgress(db: Db, actor: SessionUser, trackId: stri
     };
   });
 }
+
+/** Pessoas e grupos que ainda não têm atribuição direta nesta trilha. */
+export async function listAssignTargets(db: Db, actor: SessionUser, trackId: string) {
+  guard(actor);
+  const assigned = await db.trackAssignment.findMany({ where: { trackId }, select: { userId: true, groupId: true } });
+  const userIds = assigned.map((a) => a.userId).filter((x): x is string => !!x);
+  const groupIds = assigned.map((a) => a.groupId).filter((x): x is string => !!x);
+  const [users, groups] = await Promise.all([
+    db.user.findMany({
+      where: { status: { not: "INACTIVE" }, id: { notIn: userIds } },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, email: true, department: true },
+    }),
+    db.group.findMany({
+      where: { id: { notIn: groupIds } },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, _count: { select: { members: true } } },
+    }),
+  ]);
+  return { users, groups };
+}

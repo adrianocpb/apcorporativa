@@ -44,6 +44,14 @@
 
 - O HTML de artigos é gerado no servidor a partir de uma lista fechada de elementos; texto sempre escapado; links só http/https/mailto/internos (externos com `noopener noreferrer`); imagens só da própria plataforma. Testado contra `<script>`, `javascript:` e injeção de atributos.
 
+## Progresso e conclusão
+
+- Toda regra (bloqueio, tempo mínimo, conclusão) é aplicada no servidor; abrir, concluir ou enviar progresso de item bloqueado é recusado mesmo por chamada direta.
+- Vídeo: o navegador informa trechos assistidos; o servidor aceita no máximo o tempo real decorrido × 2 (+3 s), limitado a 30 s por sinal, e soma intervalos sem repetição. Pular, acelerar ou deixar a página parada não gera crédito. A duração do MP4 é lida do próprio arquivo; a informada pelo navegador só vale quando não há outra (WebM) e fica fixada no primeiro sinal.
+- Leitura: a confirmação só é aceita após o tempo mínimo contado desde a primeira abertura registrada no servidor.
+- Rota de progresso exige sessão e mesma origem; conclusão é idempotente (restrição única).
+- Limitação conhecida: um usuário mal-intencionado pode simular sinais de vídeo em tempo real (deixando a página tocar). O controle torna a fraude tão demorada quanto assistir.
+
 ## Segredos e dados
 
 - `.env` fora do Git; `.env.example` sem valores reais.
