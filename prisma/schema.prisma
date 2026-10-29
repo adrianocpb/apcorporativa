@@ -1,0 +1,159 @@
+// Modelo de dados — Fase 1 (identidade, acesso e auditoria).
+// Documentação: docs/MODELO-DE-DADOS.md
+// Validação em SQLite; o schema evita recursos exclusivos do SQLite para migrar a PostgreSQL.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserStatus {
+  INVITED // cadastrado pelo admin, aguardando definir a senha pelo convite
+  ACTIVE
+  INACTIVE
+}
+
+enum AuthTokenType {
+  INVITE
+  PASSWORD_RESET
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  key         String           @unique // ADMIN, COLABORADOR (futuro: GESTOR_CONTEUDO)
+  name        String
+  description String?
+  users       User[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique // ex.: usuarios.gerenciar
+  description String
+  roles       RolePermission[]
+}
+
+// Fase 2 acrescenta escopo opcional por categoria (gestor de conteúdo de uma área).
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique // sempre em minúsculas
+  username     String     @unique // identificador de acesso, minúsculas
+  department   String?
+  jobTitle     String?
+  hireDate     DateTime?
+  status       UserStatus @default(INVITED)
+  passwordHash String?
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  lastLoginAt  DateTime?
+  createdById  String?
+  createdBy    User?      @relation("UserCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdUsers User[]     @relation("UserCreatedBy")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  sessions    Session[]
+  authTokens  AuthToken[]     @relation("TokenOwner")
+  issuedTokens AuthToken[]    @relation("TokenIssuer")
+  groups      GroupMember[]
+  auditLogs   AuditLog[]
+
+  @@index([status])
+  @@index([department])
+}
+
+model Group {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  description String?
+  members     GroupMember[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model GroupMember {
+  groupId String
+  userId  String
+  addedAt DateTime @default(now())
+  group   Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@index([userId])
+}
+
+// O id é o SHA-256 do token do cookie: o token em si nunca é gravado.
+model Session {
+  id                String   @id
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt         DateTime // expiração por inatividade (deslizante)
+  absoluteExpiresAt DateTime // limite máximo, não renovável
+  lastSeenAt        DateTime @default(now())
+  ip                String?
+  userAgent         String?
+  createdAt         DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Convites e redefinições de senha: uso único, só o hash é gravado.
+model AuthToken {
+  id          String        @id @default(cuid())
+  tokenHash   String        @unique
+  type        AuthTokenType
+  userId      String
+  user        User          @relation("TokenOwner", fields: [userId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User?         @relation("TokenIssuer", fields: [createdById], references: [id], onDelete: SetNull)
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([userId, type])
+}
+
+// Base para limitar tentativas de login (persistente entre reinícios).
+model LoginAttempt {
+  id         String   @id @default(cuid())
+  identifier String // e-mail/login informado, em minúsculas
+  ip         String?
+  success    Boolean
+  createdAt  DateTime @default(now())
+
+  @@index([identifier, createdAt])
+  @@index([ip, createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action     String // ex.: usuario.desativado
+  entityType String
+  entityId   String?
+  details    Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@index([actorId])
+}

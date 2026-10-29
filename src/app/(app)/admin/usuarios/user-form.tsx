@@ -1,0 +1,171 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useFormAction } from "@/components/forms/use-form-action";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { Field, Input, Select } from "@/components/ui/field";
+import { Alert } from "@/components/ui/feedback";
+import { CopyField } from "@/components/ui/copy-field";
+import { Modal } from "@/components/ui/modal";
+import { toast } from "@/components/ui/toaster";
+import { ROLE_OPTIONS } from "@/lib/labels";
+import type { ActionState } from "@/server/actions";
+
+export type UserFormValues = {
+  name: string;
+  email: string;
+  username: string;
+  department: string;
+  jobTitle: string;
+  hireDate: string;
+  roleKey: string;
+};
+
+type CreatedData = { userId: string; name: string; url: string; expiresAt: string };
+
+/** Formulário de cadastro/edição. Na criação, exibe o link de convite gerado. */
+export function UserForm<T>({
+  action,
+  defaultValues,
+  mode,
+  departments,
+  roleLocked,
+}: {
+  action: (state: ActionState<T>, formData: FormData) => Promise<ActionState<T>>;
+  defaultValues?: UserFormValues;
+  mode: "create" | "edit";
+  departments: string[];
+  roleLocked?: boolean;
+}) {
+  const [state, formAction, pending] = useFormAction(action);
+  // O modal do convite abre a cada cadastro bem-sucedido até ser fechado.
+  const [dismissedAt, setDismissedAt] = useState<number>();
+  const router = useRouter();
+  const created = mode === "create" && state.ok ? (state.data as CreatedData | undefined) : undefined;
+  // Após um envio com erro, reexibe o que foi digitado.
+  const v = (state.ok === false ? state.values : undefined) ?? defaultValues;
+  const err = state.fieldErrors ?? {};
+
+  useEffect(() => {
+    if (!state.ok) return;
+    if (mode === "edit" && state.message) toast(state.message);
+  }, [state, mode]);
+
+
+  return (
+    <>
+      <form key={state.at ?? 0} action={formAction} className="flex flex-col gap-5" noValidate>
+        {state.ok === false && state.message && <Alert tone="danger">{state.message}</Alert>}
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field label="Nome completo" name="name" required error={err.name} className="md:col-span-2">
+            {(p) => <Input {...p} defaultValue={v?.name} autoComplete="off" maxLength={120} />}
+          </Field>
+          <Field label="E-mail" name="email" required error={err.email}>
+            {(p) => <Input {...p} type="email" defaultValue={v?.email} autoComplete="off" />}
+          </Field>
+          <Field
+            label="Login (identificador de acesso)"
+            name="username"
+            required
+            error={err.username}
+            hint="Letras minúsculas, números, ponto, hífen ou sublinhado."
+          >
+            {(p) => <Input {...p} defaultValue={v?.username} autoComplete="off" maxLength={40} />}
+          </Field>
+          <Field label="Área ou departamento" name="department" error={err.department}>
+            {(p) => (
+              <>
+                <Input {...p} defaultValue={v?.department} list="areas" maxLength={80} />
+                <datalist id="areas">
+                  {departments.map((d) => (
+                    <option key={d} value={d} />
+                  ))}
+                </datalist>
+              </>
+            )}
+          </Field>
+          <Field label="Cargo" name="jobTitle" error={err.jobTitle}>
+            {(p) => <Input {...p} defaultValue={v?.jobTitle} maxLength={80} />}
+          </Field>
+          <Field
+            label="Data de entrada"
+            name="hireDate"
+            error={err.hireDate}
+            hint="Opcional. Usada no acompanhamento do onboarding."
+          >
+            {(p) => <Input {...p} type="date" defaultValue={v?.hireDate} />}
+          </Field>
+          <Field
+            label="Perfil de acesso"
+            name="roleKey"
+            required
+            error={err.roleKey}
+            hint={roleLocked ? "Você não pode alterar o seu próprio perfil." : undefined}
+          >
+            {(p) =>
+              roleLocked ? (
+                <>
+                  <Select {...p} name={undefined} defaultValue={v?.roleKey} disabled>
+                    {ROLE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </Select>
+                  <input type="hidden" name="roleKey" value={v?.roleKey} />
+                </>
+              ) : (
+                <Select {...p} defaultValue={v?.roleKey ?? "COLABORADOR"}>
+                  {ROLE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </Select>
+              )
+            }
+          </Field>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" loading={pending}>
+            {mode === "create" ? "Cadastrar e gerar convite" : "Salvar alterações"}
+          </Button>
+          {mode === "create" && (
+            <ButtonLink href="/admin/usuarios" variant="tonal">
+              Cancelar
+            </ButtonLink>
+          )}
+        </div>
+      </form>
+
+      {created && (
+        <Modal
+          open={dismissedAt !== state.at}
+          onOpenChange={(open) => {
+            if (!open) setDismissedAt(state.at);
+            if (!open) router.push(`/admin/usuarios/${created.userId}`);
+          }}
+          title="Usuário cadastrado"
+        >
+          <div className="flex flex-col gap-4">
+            <p className="text-body text-ink-soft">
+              Envie este link de convite para <strong className="font-medium text-ink">{created.name}</strong>{" "}
+              pelo canal interno da empresa. Com ele, a pessoa define a própria senha e ativa a conta.
+            </p>
+            <CopyField value={created.url} label="Link de convite" />
+            <p className="text-small text-ink-muted">
+              Válido até {created.expiresAt}, para um único uso. Se expirar, gere outro na página do
+              usuário.
+            </p>
+            <div className="flex justify-end">
+              <Button onClick={() => router.push(`/admin/usuarios/${created.userId}`)}>
+                Ir para o usuário
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}
