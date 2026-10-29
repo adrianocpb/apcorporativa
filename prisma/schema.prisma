@@ -1,4 +1,4 @@
-// Modelo de dados — Fase 1 (identidade, acesso e auditoria) e Fase 2 (conteúdo).
+// Modelo de dados — Fase 1 (identidade, acesso e auditoria), Fase 2 (conteúdo) e Fase 3 (trilhas).
 // Documentação: docs/MODELO-DE-DADOS.md
 // Validação em SQLite; o schema evita recursos exclusivos do SQLite para migrar a PostgreSQL.
 
@@ -70,26 +70,33 @@ model User {
   updatedAt    DateTime   @updatedAt
 
   sessions          Session[]
-  authTokens        AuthToken[]      @relation("TokenOwner")
-  issuedTokens      AuthToken[]      @relation("TokenIssuer")
+  authTokens        AuthToken[]        @relation("TokenOwner")
+  issuedTokens      AuthToken[]        @relation("TokenIssuer")
   groups            GroupMember[]
   auditLogs         AuditLog[]
   uploadedFiles     StoredFile[]
-  authoredContents  Content[]        @relation("ContentAuthor")
-  createdVersions   ContentVersion[] @relation("VersionCreator")
-  publishedVersions ContentVersion[] @relation("VersionPublisher")
+  authoredContents  Content[]          @relation("ContentAuthor")
+  createdVersions   ContentVersion[]   @relation("VersionCreator")
+  publishedVersions ContentVersion[]   @relation("VersionPublisher")
+  createdTracks     Track[]
+  trackAssignments  TrackAssignment[]  @relation("AssignedUser")
+  assignmentsMade   TrackAssignment[]  @relation("AssignedBy")
+  enrollments       Enrollment[]
+  contentProgress   ContentProgress[]
+  completions       CompletionRecord[]
 
   @@index([status])
   @@index([department])
 }
 
 model Group {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  description String?
-  members     GroupMember[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id               String            @id @default(cuid())
+  name             String            @unique
+  description      String?
+  members          GroupMember[]
+  trackAssignments TrackAssignment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model GroupMember {
@@ -209,6 +216,7 @@ model Category {
   position    Int            @default(0)
   status      CategoryStatus @default(ACTIVE)
   contents    Content[]
+  tracks      Track[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
@@ -219,42 +227,47 @@ model Category {
 // Metadados de arquivos. Os bytes ficam no armazenamento (disco local ou S3), nunca no banco.
 // Arquivos são imutáveis: substituir um arquivo cria uma nova versão do conteúdo.
 model StoredFile {
-  id           String   @id @default(cuid())
-  storageKey   String   @unique // caminho interno gerado pelo sistema (nunca o nome enviado)
-  originalName String
-  mimeType     String
-  kind         FileKind
-  size         Int
-  sha256       String
-  uploadedById String?
-  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
-  createdAt    DateTime @default(now())
+  id              String   @id @default(cuid())
+  storageKey      String   @unique // caminho interno gerado pelo sistema (nunca o nome enviado)
+  originalName    String
+  mimeType        String
+  kind            FileKind
+  size            Int
+  sha256          String
+  durationSeconds Float? // vídeo MP4: lida do próprio arquivo pelo servidor
+  uploadedById    String?
+  uploadedBy      User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime @default(now())
 
-  mainOf     ContentVersion[]
-  embeddedIn ContentVersionAsset[]
+  mainOf      ContentVersion[]
+  embeddedIn  ContentVersionAsset[]
+  trackCovers Track[]
 
   @@index([sha256])
 }
 
 // Conteúdo único e reutilizável: o mesmo registro serve às trilhas (Fase 3) e à Central de Conhecimento.
 model Content {
-  id               String           @id @default(cuid())
+  id               String             @id @default(cuid())
   type             ContentType
   title            String // espelha a versão vigente (ou o rascunho, se nunca publicado)
-  status           ContentStatus    @default(DRAFT)
+  status           ContentStatus      @default(DRAFT)
   categoryId       String?
-  category         Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  inLibrary        Boolean          @default(true) // visível na Central de Conhecimento
-  currentVersionId String?          @unique
-  currentVersion   ContentVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
-  versions         ContentVersion[] @relation("ContentVersions")
+  category         Category?          @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  inLibrary        Boolean            @default(true) // visível na Central de Conhecimento
+  currentVersionId String?            @unique
+  currentVersion   ContentVersion?    @relation("CurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions         ContentVersion[]   @relation("ContentVersions")
   authorId         String?
-  author           User?            @relation("ContentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-  viewCount        Int              @default(0)
+  author           User?              @relation("ContentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  trackItems       TrackItem[]
+  progress         ContentProgress[]
+  completions      CompletionRecord[]
+  viewCount        Int                @default(0)
   publishedAt      DateTime? // primeira publicação
   archivedAt       DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 
   @@index([status, type])
   @@index([categoryId])
@@ -280,6 +293,8 @@ model ContentVersion {
   changeNote           String?
   requiresRecompletion Boolean               @default(false) // mudança relevante: exige nova conclusão (Fase 3)
   assets               ContentVersionAsset[]
+  progress             ContentProgress[]
+  completions          CompletionRecord[]
   createdById          String?
   createdBy            User?                 @relation("VersionCreator", fields: [createdById], references: [id], onDelete: SetNull)
   publishedById        String?
@@ -301,4 +316,173 @@ model ContentVersionAsset {
 
   @@id([versionId, fileId])
   @@index([fileId])
+}
+
+// ---------------------------------------------------------------------------
+// Fase 3 — trilhas de aprendizagem
+// ---------------------------------------------------------------------------
+
+enum TrackStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CompletionRule {
+  WATCH // vídeo: percentual assistido validado no servidor
+  CONFIRM // o colaborador confirma após o tempo mínimo de leitura
+  VIEW // abrir já conclui (imagens e links simples)
+}
+
+enum EnrollmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ProgressStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum CompletionMethod {
+  VIDEO_WATCHED
+  CONFIRMED
+  VIEWED
+}
+
+model Track {
+  id                String             @id @default(cuid())
+  title             String
+  description       String?
+  coverFileId       String?
+  coverFile         StoredFile?        @relation(fields: [coverFileId], references: [id], onDelete: SetNull)
+  categoryId        String?
+  category          Category?          @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  status            TrackStatus        @default(DRAFT)
+  sequential        Boolean            @default(true) // etapas desbloqueadas em ordem
+  isOnboarding      Boolean            @default(false)
+  videoThresholdPct Int                @default(90) // % mínimo assistido para concluir vídeo
+  minReadSeconds    Int                @default(30) // tempo mínimo antes de confirmar leitura de PDF/artigo
+  createdById       String?
+  createdBy         User?              @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  modules           TrackModule[]
+  assignments       TrackAssignment[]
+  enrollments       Enrollment[]
+  completions       CompletionRecord[]
+  publishedAt       DateTime?
+  archivedAt        DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([status])
+}
+
+model TrackModule {
+  id          String      @id @default(cuid())
+  trackId     String
+  track       Track       @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  position    Int
+  items       TrackItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([trackId, position])
+}
+
+// Liga um conteúdo (reutilizável) a uma etapa. O conteúdo não é copiado.
+model TrackItem {
+  id             String         @id @default(cuid())
+  moduleId       String
+  module         TrackModule    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  contentId      String
+  content        Content        @relation(fields: [contentId], references: [id], onDelete: Restrict)
+  position       Int
+  required       Boolean        @default(true)
+  completionRule CompletionRule
+  createdAt      DateTime       @default(now())
+
+  @@index([moduleId, position])
+  @@index([contentId])
+}
+
+// Atribuição direta a uma pessoa ou a um grupo.
+model TrackAssignment {
+  id           String    @id @default(cuid())
+  trackId      String
+  track        Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?     @relation("AssignedUser", fields: [userId], references: [id], onDelete: Cascade)
+  groupId      String?
+  group        Group?    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  assignedById String?
+  assignedBy   User?     @relation("AssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  dueDate      DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([trackId, userId])
+  @@unique([trackId, groupId])
+}
+
+// Matrícula materializada: a pessoa tem a trilha. Preservada mesmo se a atribuição sair.
+model Enrollment {
+  id             String           @id @default(cuid())
+  trackId        String
+  track          Track            @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         EnrollmentStatus @default(NOT_STARTED)
+  startedAt      DateTime?
+  completedAt    DateTime?
+  lastItemId     String? // último item aberto (onde parou)
+  lastActivityAt DateTime?
+  removedAt      DateTime? // atribuição retirada antes da conclusão
+  createdAt      DateTime         @default(now())
+
+  @@unique([trackId, userId])
+  @@index([userId])
+}
+
+// Progresso de uma pessoa em uma versão de conteúdo (independe da trilha).
+model ContentProgress {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentId        String
+  content          Content        @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentVersionId String
+  contentVersion   ContentVersion @relation(fields: [contentVersionId], references: [id], onDelete: Cascade)
+  status           ProgressStatus @default(IN_PROGRESS)
+  positionSeconds  Float          @default(0) // retomada do vídeo
+  durationSeconds  Float?
+  watchedRanges    Json? // intervalos assistidos validados [[início, fim], ...]
+  watchedSeconds   Float          @default(0)
+  openedAt         DateTime       @default(now())
+  lastHeartbeatAt  DateTime?
+  lastActivityAt   DateTime       @default(now())
+  completedAt      DateTime?
+
+  @@unique([userId, contentVersionId])
+  @@index([userId, contentId])
+}
+
+// Histórico de aprendizagem: somente inserção, nunca alterado nem apagado.
+model CompletionRecord {
+  id               String           @id @default(cuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentId        String
+  content          Content          @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentVersionId String
+  contentVersion   ContentVersion   @relation(fields: [contentVersionId], references: [id], onDelete: Cascade)
+  trackId          String?
+  track            Track?           @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  method           CompletionMethod
+  evidence         Json?
+  completedAt      DateTime         @default(now())
+
+  @@unique([userId, contentVersionId])
+  @@index([userId, contentId])
 }

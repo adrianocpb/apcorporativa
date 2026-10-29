@@ -8,6 +8,7 @@ export const PERMISSIONS = {
   AUDITORIA_VER: "auditoria.ver",
   CONTEUDOS_GERENCIAR: "conteudos.gerenciar",
   CATEGORIAS_GERENCIAR: "categorias.gerenciar",
+  TRILHAS_GERENCIAR: "trilhas.gerenciar",
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -19,6 +20,7 @@ export const PERMISSION_DESCRIPTIONS: Record<PermissionKey, string> = {
   "auditoria.ver": "Consultar o registro de auditoria",
   "conteudos.gerenciar": "Criar, editar, publicar e arquivar conteúdos e enviar arquivos",
   "categorias.gerenciar": "Organizar as categorias da Central de Conhecimento",
+  "trilhas.gerenciar": "Criar trilhas, atribuí-las e acompanhar o progresso",
 };
 
 export const ROLE_KEYS = {

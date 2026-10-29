@@ -10,6 +10,13 @@ export const db: Db = createDbClient(TEST_DATABASE_URL);
 
 // Ordem respeita as chaves estrangeiras.
 const TABLES = [
+  "CompletionRecord",
+  "ContentProgress",
+  "Enrollment",
+  "TrackAssignment",
+  "TrackItem",
+  "TrackModule",
+  "Track",
   "ContentVersionAsset",
   'UPDATE "Content" SET "currentVersionId" = NULL',
   "ContentVersion",

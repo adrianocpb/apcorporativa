@@ -58,6 +58,14 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "categoria.reordenada": "Categoria reordenada",
   "categoria.arquivada": "Categoria arquivada",
   "categoria.restaurada": "Categoria restaurada",
+  "trilha.criada": "Trilha criada",
+  "trilha.editada": "Trilha editada",
+  "trilha.publicada": "Trilha publicada",
+  "trilha.arquivada": "Trilha arquivada",
+  "trilha.restaurada": "Trilha restaurada",
+  "trilha.estrutura_alterada": "Estrutura da trilha alterada",
+  "trilha.atribuida": "Trilha atribuída",
+  "trilha.atribuicao_removida": "Atribuição de trilha removida",
 };
 
 export const AUDIT_PAGE_SIZE = 30;

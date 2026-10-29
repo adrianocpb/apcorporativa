@@ -6,6 +6,7 @@ import { groupInputSchema } from "@/lib/validation/users";
 import { parseInput } from "@/server/validation";
 import { audit } from "@/server/services/audit";
 import { assertPermission } from "@/server/services/guard";
+import { syncEnrollmentsForGroups } from "@/server/services/learning";
 
 export async function listGroups(db: Db, actor: SessionUser) {
   assertPermission(actor, PERMISSIONS.GRUPOS_GERENCIAR);
@@ -160,6 +161,8 @@ export async function addGroupMembers(
       details: { grupo: group.name, usuarios: users.map((u) => u.name) },
       ip: meta.ip,
     });
+    // Novos membros recebem as trilhas atribuídas ao grupo.
+    await syncEnrollmentsForGroups(tx, [groupId]);
   });
   return candidates.length;
 }
@@ -178,6 +181,7 @@ export async function removeGroupMember(
   });
   if (!member) throw new NotFoundError("Membro não encontrado no grupo.");
   await db.groupMember.delete({ where: { groupId_userId: { groupId, userId } } });
+  await syncEnrollmentsForGroups(db, [groupId]);
   await audit(db, {
     actorId: actor.id,
     action: "grupo.membro_removido",

@@ -8,6 +8,7 @@ import { parseInput } from "@/server/validation";
 import { audit } from "@/server/services/audit";
 import { issueAuthToken } from "@/server/services/auth";
 import { assertPermission } from "@/server/services/guard";
+import { syncEnrollmentsForGroups } from "@/server/services/learning";
 
 export const USERS_PAGE_SIZE = 20;
 
@@ -408,5 +409,6 @@ export async function setUserGroups(
       },
       ip: meta.ip,
     });
+    await syncEnrollmentsForGroups(tx, [...added, ...removed]);
   });
 }

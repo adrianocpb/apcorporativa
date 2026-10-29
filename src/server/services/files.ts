@@ -6,6 +6,7 @@ import { AppError, NotFoundError } from "@/server/errors";
 import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
 import type { SessionUser } from "@/server/auth/sessions";
 import { getStorage, type StorageProvider } from "@/server/storage/storage";
+import { readMp4Duration } from "@/server/storage/mp4";
 import { assertPermission } from "@/server/services/guard";
 import { FILE_RULES, formatBytes } from "@/lib/file-rules";
 
@@ -104,6 +105,11 @@ export async function storeUpload(
     throw new AppError("Não foi possível gravar o arquivo. Tente novamente.");
   }
 
+  const durationSeconds =
+    detected.mime === "video/mp4"
+      ? await readMp4Duration((start, length) => storage.readBytes(storageKey, start, length), size)
+      : null;
+
   try {
     return await db.storedFile.create({
       data: {
@@ -113,6 +119,7 @@ export async function storeUpload(
         kind: input.kind,
         size,
         sha256: hash.digest("hex"),
+        durationSeconds,
         uploadedById: actor.id,
       },
     });

@@ -24,3 +24,22 @@ export const PNG_BYTES = Uint8Array.from(
     "base64",
   ),
 );
+
+function box(type: string, ...payload: Buffer[]) {
+  const body = Buffer.concat(payload);
+  const header = Buffer.alloc(8);
+  header.writeUInt32BE(body.length + 8, 0);
+  header.write(type, 4, "latin1");
+  return Buffer.concat([header, body]);
+}
+
+/** MP4 mínimo (ftyp + mdat + moov/mvhd) com a duração indicada. Não é reproduzível. */
+export function makeMp4(durationSeconds: number) {
+  const ftyp = box("ftyp", Buffer.from("isom"), Buffer.from([0, 0, 2, 0]), Buffer.from("isomiso2mp41"));
+  const mdat = box("mdat", Buffer.alloc(5000));
+  const mvhd = Buffer.alloc(100);
+  mvhd.writeUInt32BE(1000, 12); // timescale
+  mvhd.writeUInt32BE(Math.round(durationSeconds * 1000), 16); // duração
+  const moov = box("moov", box("mvhd", mvhd));
+  return Uint8Array.from(Buffer.concat([ftyp, mdat, moov]));
+}
