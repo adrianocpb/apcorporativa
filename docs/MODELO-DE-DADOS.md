@@ -83,6 +83,15 @@ User 1─N ContentProgress (por versão de conteúdo) · User 1─N CompletionRe
 
 Pontos de conteúdo são por **conteúdo** (não por versão): reconcluir após mudança relevante não pontua de novo. Mudar o valor de uma regra não recalcula pontos já concedidos.
 
+## Fase 5 — Central de Conhecimento
+
+| Entidade | Finalidade | Regras |
+| --- | --- | --- |
+| `Favorite` | Favoritos | Único por (pessoa, conteúdo). |
+| `ContentView` | Acessos à página do conteúdo | Um acesso da mesma pessoa ao mesmo conteúdo em 30 min conta uma vez; também incrementa `Content.viewCount`. Base de "mais acessados" (90 dias) e "vistos recentemente". |
+
+O **índice de busca** não fica neste banco: é um arquivo SQLite FTS5 próprio (`data/search.db`), dado derivado e reconstruível. Assim as migrações do Prisma não lidam com tabelas virtuais, e na migração para PostgreSQL basta trocar a implementação de `SearchIndex` (tsvector em português + unaccent).
+
 ## Regras de integridade
 
 - Chaves estrangeiras ativas no SQLite (verificado em teste).

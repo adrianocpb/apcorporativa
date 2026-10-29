@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { IconPlayerPlay, IconRoute, IconUsers } from "@tabler/icons-react";
+import { IconBooks, IconPlayerPlay, IconRoute, IconSearch, IconUsers } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requireUser } from "@/server/auth/current-user";
 import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
 import { getMyTracks } from "@/server/services/learning";
 import { getLevelInfo } from "@/server/services/gamification";
 import { LevelCard } from "@/components/learning/level-card";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, ProgressBar } from "@/components/ui/feedback";
 import { ContentTypeIcon } from "@/components/content/content-type-icon";
@@ -151,6 +151,30 @@ export default async function DashboardPage() {
           )}
         </>
       )}
+
+      <Card>
+        <CardBody className="flex flex-wrap items-center gap-4">
+          <span className="flex size-[38px] items-center justify-center rounded-md bg-info-subtle text-info-text" aria-hidden="true">
+            <IconBooks className="size-[22px]" stroke={1.5} />
+          </span>
+          <div className="min-w-[200px] flex-1">
+            <p className="text-h6 font-medium text-ink">Central de Conhecimento</p>
+            <p className="text-small text-ink-soft">Manuais, vídeos e perguntas frequentes para consultar quando precisar.</p>
+          </div>
+          <form action="/biblioteca" method="get" role="search" className="flex w-full gap-2 sm:w-auto">
+            <input
+              type="search"
+              name="q"
+              placeholder="Buscar…"
+              aria-label="Buscar na Central de Conhecimento"
+              className="h-[38px] w-full rounded-md border border-line-input bg-surface px-3 text-body text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none sm:w-64"
+            />
+            <Button type="submit" variant="tonal" icon={<IconSearch />} className="shrink-0">
+              Buscar
+            </Button>
+          </form>
+        </CardBody>
+      </Card>
 
       {isAdmin && (
         <Card>

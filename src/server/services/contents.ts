@@ -8,6 +8,7 @@ import { renderRichText, type RichNode } from "@/lib/rich-text";
 import { parseInput } from "@/server/validation";
 import { audit } from "@/server/services/audit";
 import { assertPermission } from "@/server/services/guard";
+import { indexContent } from "@/server/services/library";
 
 // Ciclo de vida:
 //  - Conteúdo novo: versão 1 em rascunho (status do conteúdo DRAFT).
@@ -364,6 +365,7 @@ export async function publishContent(
       ip: meta.ip,
     });
   });
+  await indexContent(db, contentId);
 }
 
 /** Descarta o rascunho de um conteúdo que já tem versão publicada. */
@@ -419,6 +421,7 @@ export async function deleteUnpublishedContent(
       ip: meta.ip,
     });
   });
+  await indexContent(db, contentId);
 }
 
 export async function setContentArchived(
@@ -447,6 +450,7 @@ export async function setContentArchived(
       ip: meta.ip,
     });
   });
+  await indexContent(db, contentId);
 }
 
 export async function getContentStats(db: Db, actor: SessionUser) {

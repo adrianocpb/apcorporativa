@@ -5,11 +5,14 @@ import { hashPassword } from "@/server/auth/password";
 import { validateSessionToken, createSession, type SessionUser } from "@/server/auth/sessions";
 import type { RoleKey } from "@/server/auth/permissions";
 import { TEST_DATABASE_URL } from "./global-setup";
+import { getSearchIndex } from "@/server/search/search-index";
 
 export const db: Db = createDbClient(TEST_DATABASE_URL);
 
 // Ordem respeita as chaves estrangeiras.
 const TABLES = [
+  "Favorite",
+  "ContentView",
   "Notification",
   "UserAchievement",
   "Achievement",
@@ -47,6 +50,7 @@ export async function resetDb() {
     await db.$executeRawUnsafe(/\s/.test(entry) ? entry : `DELETE FROM "${entry}"`);
   }
   await seedBase(db);
+  getSearchIndex().clear();
 }
 
 /** Registra reset antes de cada teste e desconexão ao final do arquivo. */

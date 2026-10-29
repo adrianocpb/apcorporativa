@@ -90,6 +90,13 @@ O SQLite atende um piloto com dezenas de usuários em **um único servidor**. Pa
 - `src/server/services/gamification.ts`: concessão idempotente (`rewardProgress`), conquistas, notificações e configuração. É chamada pelo serviço de aprendizagem ao final de cada conclusão; como é idempotente, recebe todas as etapas e trilhas concluídas e só lança o que ainda não foi lançado.
 - Valores iniciais (níveis, regras, conquistas) são criados pelo seed apenas se ainda não existirem.
 
+## Central de Conhecimento (Fase 5)
+
+- `src/server/search/search-index.ts`: interface `SearchIndex` e implementação SQLite FTS5 (tokenizador `unicode61 remove_diacritics 2`, ranking BM25 com pesos título 10, descrição 4, corpo 1). A entrada do usuário vira termos entre aspas com prefixo — nunca sintaxe FTS livre.
+- `src/server/services/library.ts`: busca (o índice devolve os ids por relevância; publicação, presença na biblioteca, tipo e categoria são filtrados no banco principal), página inicial, detalhe, acessos e favoritos. O índice é atualizado pelo serviço de conteúdos ao publicar, arquivar, restaurar e excluir, e reconstruído automaticamente se estiver vazio.
+- O trecho destacado usa marcadores de controle (não HTML) e é renderizado como texto.
+- Acesso registrado por efeito no navegador (pré-carregamento não conta).
+
 ## Conteúdo e editor
 
 - Artigos e FAQs são editados com **Tiptap**; o documento é salvo em JSON e o servidor gera o HTML com `renderRichText`, que só aceita elementos e atributos conhecidos (títulos, parágrafos, listas, negrito, itálico, sublinhado, links http/https/mailto, imagens da própria plataforma com legenda, tabelas, destaque e linha divisória). O mesmo código gera o texto puro para a busca (Fase 5) e a lista de imagens incorporadas (controle de acesso).

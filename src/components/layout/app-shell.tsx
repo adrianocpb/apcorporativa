@@ -17,6 +17,8 @@ import {
   IconRoute,
   IconTrophy,
   IconSparkles,
+  IconBooks,
+  IconSearch,
   IconX,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -40,6 +42,7 @@ const ICONS = {
   trilhas: IconRoute,
   conquistas: IconTrophy,
   gamificacao: IconSparkles,
+  biblioteca: IconBooks,
 };
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };
@@ -168,6 +171,24 @@ export function AppShell({
             <div className="lg:hidden">
               <BrandMark showName={false} />
             </div>
+            {/* Busca global: leva para a Central de Conhecimento. */}
+            <form action="/biblioteca" method="get" role="search" className="relative hidden max-w-md flex-1 md:block">
+              <IconSearch className="pointer-events-none absolute top-1/2 left-3 size-[18px] -translate-y-1/2 text-ink-muted" aria-hidden="true" />
+              <input
+                type="search"
+                name="q"
+                placeholder="Buscar na Central de Conhecimento"
+                aria-label="Buscar na Central de Conhecimento"
+                className="h-[38px] w-full rounded-md border border-transparent bg-transparent pr-3 pl-10 text-body text-ink placeholder:text-ink-muted hover:bg-surface-hover focus:border-primary focus:bg-surface focus:outline-none"
+              />
+            </form>
+            <Link
+              href="/biblioteca"
+              className="flex size-[38px] items-center justify-center rounded-md text-ink-soft hover:bg-surface-hover md:hidden"
+              aria-label="Buscar na Central de Conhecimento"
+            >
+              <IconSearch className="size-[22px]" />
+            </Link>
             <form ref={logoutFormRef} action={logoutAction} hidden />
             <div className="ml-auto flex items-center gap-1">
               <NotificationBell items={notifications.items} unread={notifications.unread} markRead={markNotificationsRead} />

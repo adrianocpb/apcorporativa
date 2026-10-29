@@ -1,4 +1,4 @@
-// Modelo de dados — Fases 1 (acesso), 2 (conteúdo), 3 (trilhas) e 4 (gamificação).
+// Modelo de dados — Fases 1 (acesso), 2 (conteúdo), 3 (trilhas), 4 (gamificação) e 5 (Central de Conhecimento).
 // Documentação: docs/MODELO-DE-DADOS.md
 // Validação em SQLite; o schema evita recursos exclusivos do SQLite para migrar a PostgreSQL.
 
@@ -88,6 +88,8 @@ model User {
   pointAdjustments  PointTransaction[] @relation("PointsAdjuster")
   achievements      UserAchievement[]
   notifications     Notification[]
+  favorites         Favorite[]
+  contentViews      ContentView[]
 
   @@index([status])
   @@index([department])
@@ -265,6 +267,8 @@ model Content {
   authorId         String?
   author           User?              @relation("ContentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   trackItems       TrackItem[]
+  favorites        Favorite[]
+  views            ContentView[]
   progress         ContentProgress[]
   completions      CompletionRecord[]
   viewCount        Int                @default(0)
@@ -578,4 +582,33 @@ model Notification {
   createdAt DateTime  @default(now())
 
   @@index([userId, readAt])
+}
+
+// ---------------------------------------------------------------------------
+// Fase 5 — Central de Conhecimento
+// (o índice de busca textual fica fora deste banco: ver src/server/search)
+// ---------------------------------------------------------------------------
+
+model Favorite {
+  userId    String
+  contentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, contentId])
+  @@index([contentId])
+}
+
+// Acessos à página do conteúdo (base de "mais acessados" e "vistos recentemente").
+model ContentView {
+  id        String   @id @default(cuid())
+  userId    String
+  contentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  viewedAt  DateTime @default(now())
+
+  @@index([contentId, viewedAt])
+  @@index([userId, viewedAt])
 }

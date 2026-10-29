@@ -2,7 +2,7 @@
 
 Plataforma interna de gestão do conhecimento e aprendizagem: onboarding de novos colaboradores, trilhas de treinamento, Central de Conhecimento e gamificação.
 
-> **Status:** Fases 1 a 4 concluídas — acesso e usuários, gestão de conteúdo, trilhas de aprendizagem com progresso validado no servidor e gamificação (pontos, níveis, conquistas e notificações). Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+> **Status:** Fases 1 a 5 concluídas — acesso e usuários, gestão de conteúdo, trilhas com progresso validado no servidor, gamificação e Central de Conhecimento (busca, filtros, favoritos, mais acessados). Falta a Fase 6 (relatórios). Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
 
 ## Stack
 
@@ -42,6 +42,7 @@ Acesse http://localhost:3000.
 | `npm run db:setup` | Aplica migrações e sincroniza papéis/permissões |
 | `npm run db:migrate:dev` | Cria nova migração a partir do `prisma/schema.prisma` (desenvolvimento) |
 | `npm run admin:criar` | Cria administrador e gera o link de convite |
+| `npm run search:reindex` | Reconstrói o índice de busca (ex.: após restaurar um backup) |
 | `npm run backup` | Cópia consistente do banco em `backups/` ([docs/BACKUP.md](docs/BACKUP.md)) |
 
 ## Fluxo de contas
@@ -64,6 +65,10 @@ Em **Administração → Trilhas**: crie a trilha, monte as etapas arrastando os
 ## Gamificação
 
 Cada conteúdo, etapa e trilha concluídos geram pontos uma única vez; os pontos definem o nível e as conquistas são atribuídas automaticamente. Em **Administração → Gamificação** o administrador ajusta os valores, os níveis e as conquistas e consulta o histórico de pontos. O colaborador vê nível e pontos no **Painel**, detalhes em **Conquistas** e avisos no sino de notificações. Não há ranking entre colaboradores.
+
+## Central de Conhecimento
+
+Em **Central de Conhecimento** qualquer pessoa busca por título e texto (sem depender de acentos: "ferias" encontra "férias"), filtra por tipo e categoria, vê perguntas frequentes em lista expansível, marca favoritos e encontra os conteúdos que já concluiu nas trilhas. A busca também fica na barra superior de todas as páginas.
 
 ## Documentação
 

@@ -20,6 +20,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       items: [
         { href: "/", label: "Painel", icon: "painel", exact: true },
         { href: "/trilhas", label: "Minhas trilhas", icon: "trilhas" },
+        { href: "/biblioteca", label: "Central de Conhecimento", icon: "biblioteca" },
         { href: "/conquistas", label: "Conquistas", icon: "conquistas" },
         { href: "/minha-conta", label: "Minha conta", icon: "conta" },
       ],

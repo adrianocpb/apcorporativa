@@ -16,5 +16,7 @@ export default defineConfig({
     // Um único arquivo SQLite de teste: os arquivos rodam em sequência.
     fileParallelism: false,
     testTimeout: 20000,
+    // Índice de busca em memória (isolado por arquivo de teste).
+    env: { SEARCH_DB: ":memory:" },
   },
 });

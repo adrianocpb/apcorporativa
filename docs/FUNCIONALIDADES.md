@@ -60,9 +60,20 @@
 - [x] Ajuste manual de pontos com motivo (novo lançamento, auditado); colaborador não altera pontos nem níveis
 - [x] Sem ranking público
 
+## Implementadas — Fase 5 (Central de Conhecimento)
+
+- [x] Busca por título, descrição e texto de artigos/FAQ, sem acentos e com prefixo, ordenada por relevância (título pesa mais), com trecho destacado
+- [x] Busca global na barra superior e no painel
+- [x] Filtros por tipo e categoria (incluindo subcategorias); navegação por categorias com contagem
+- [x] Perguntas frequentes em lista expansível
+- [x] Publicados recentemente, mais acessados (90 dias), vistos recentemente e favoritos
+- [x] Página do conteúdo com visualização por tipo, favorito, "nas suas trilhas", relacionados e indicação de concluído
+- [x] "Concluídos por mim": revisão de tudo que foi concluído nas trilhas (inclusive conteúdos só de trilha)
+- [x] Conteúdo só de trilha acessível a quem tem a trilha ou já concluiu; rascunho e arquivado nunca aparecem
+- [x] Índice de busca atualizado ao publicar/arquivar/excluir e reconstruível (`npm run search:reindex`)
+
 ## Pendentes (próximas fases)
 
-- [ ] **Fase 5 — Central de Conhecimento:** busca, filtros, favoritos, mais acessados
 - [ ] **Fase 6 — Relatórios:** indicadores, progresso individual, exportação CSV
 - [ ] Prazo (data limite) nas atribuições de trilha — o campo já existe no banco
 - [ ] Teste automatizado de ponta a ponta no navegador (Playwright)
