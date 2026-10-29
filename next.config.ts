@@ -26,7 +26,18 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      // Arquivos servidos pela plataforma podem ser exibidos em iframe da própria aplicação (PDF).
+      { source: "/:path((?!api/arquivos/).*)", headers: securityHeaders },
+      {
+        source: "/api/arquivos/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "Referrer-Policy", value: "same-origin" },
+        ],
+      },
+    ];
   },
 };
 

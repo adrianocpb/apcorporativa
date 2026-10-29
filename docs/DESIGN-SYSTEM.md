@@ -39,6 +39,8 @@ Public Sans 400/500/600. Classes: `text-h3` (KPI), `text-h4` (título de página
 
 Componentes de formulário em `src/components/forms`: `ConfirmActionButton` (ação com confirmação), `LinkGeneratorButton` (gera e exibe link), `NewPasswordForm`, `useFormAction` (mantém valores digitados após erro).
 
+Componentes de conteúdo em `src/components/content`: `RichTextEditor` (editor com barra de ferramentas e modo Visualizar), `FileUploadField` (envio com progresso), `ContentViewer` (exibição por tipo) e `ContentTypeIcon`. A classe `.rich-content` (em `globals.css`) define a tipografia de artigos.
+
 ## Padrões
 
 - Uma ação `primary` por área; ações secundárias em `tonal`.

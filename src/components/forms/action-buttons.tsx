@@ -22,11 +22,13 @@ export function ConfirmActionButton({
   confirmLabel,
   confirmVariant = "primary",
   successMessage,
+  size = "md",
 }: {
   action: Action;
   label: string;
   icon?: ReactNode;
   variant?: ButtonVariant;
+  size?: "md" | "sm";
   title: string;
   description: ReactNode;
   confirmLabel: string;
@@ -46,7 +48,7 @@ export function ConfirmActionButton({
 
   return (
     <>
-      <Button variant={variant} icon={icon} onClick={() => setOpen(true)}>
+      <Button variant={variant} size={size} icon={icon} onClick={() => setOpen(true)}>
         {label}
       </Button>
       <Modal open={open} onOpenChange={setOpen} title={title} description={description} size="sm">

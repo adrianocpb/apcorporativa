@@ -1,4 +1,4 @@
-// Modelo de dados — Fase 1 (identidade, acesso e auditoria).
+// Modelo de dados — Fase 1 (identidade, acesso e auditoria) e Fase 2 (conteúdo).
 // Documentação: docs/MODELO-DE-DADOS.md
 // Validação em SQLite; o schema evita recursos exclusivos do SQLite para migrar a PostgreSQL.
 
@@ -40,7 +40,7 @@ model Permission {
   roles       RolePermission[]
 }
 
-// Fase 2 acrescenta escopo opcional por categoria (gestor de conteúdo de uma área).
+// Futuro: escopo opcional por categoria (gestor de conteúdo de uma área) — ver docs/MODELO-DE-DADOS.md.
 model RolePermission {
   roleId       String
   permissionId String
@@ -69,11 +69,15 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  sessions    Session[]
-  authTokens  AuthToken[]     @relation("TokenOwner")
-  issuedTokens AuthToken[]    @relation("TokenIssuer")
-  groups      GroupMember[]
-  auditLogs   AuditLog[]
+  sessions          Session[]
+  authTokens        AuthToken[]      @relation("TokenOwner")
+  issuedTokens      AuthToken[]      @relation("TokenIssuer")
+  groups            GroupMember[]
+  auditLogs         AuditLog[]
+  uploadedFiles     StoredFile[]
+  authoredContents  Content[]        @relation("ContentAuthor")
+  createdVersions   ContentVersion[] @relation("VersionCreator")
+  publishedVersions ContentVersion[] @relation("VersionPublisher")
 
   @@index([status])
   @@index([department])
@@ -156,4 +160,145 @@ model AuditLog {
   @@index([createdAt])
   @@index([entityType, entityId])
   @@index([actorId])
+}
+
+// ---------------------------------------------------------------------------
+// Fase 2 — conteúdo
+// ---------------------------------------------------------------------------
+
+enum CategoryStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ContentType {
+  VIDEO
+  PDF
+  IMAGE
+  ARTICLE // manual, artigo ou texto explicativo escrito no editor
+  FAQ // pergunta (título) e resposta (corpo)
+  LINK // recurso externo
+}
+
+enum ContentStatus {
+  DRAFT // nunca publicado
+  PUBLISHED
+  ARCHIVED
+}
+
+enum VersionStatus {
+  DRAFT
+  PUBLISHED // versão vigente
+  SUPERSEDED // publicada antes, substituída por outra (mantida como histórico)
+}
+
+enum FileKind {
+  VIDEO
+  PDF
+  IMAGE
+}
+
+// Categorias em dois níveis (categoria > subcategoria), configuráveis pelo administrador.
+model Category {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  parent      Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children    Category[]     @relation("CategoryTree")
+  position    Int            @default(0)
+  status      CategoryStatus @default(ACTIVE)
+  contents    Content[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([parentId, name])
+  @@index([parentId, position])
+}
+
+// Metadados de arquivos. Os bytes ficam no armazenamento (disco local ou S3), nunca no banco.
+// Arquivos são imutáveis: substituir um arquivo cria uma nova versão do conteúdo.
+model StoredFile {
+  id           String   @id @default(cuid())
+  storageKey   String   @unique // caminho interno gerado pelo sistema (nunca o nome enviado)
+  originalName String
+  mimeType     String
+  kind         FileKind
+  size         Int
+  sha256       String
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  mainOf     ContentVersion[]
+  embeddedIn ContentVersionAsset[]
+
+  @@index([sha256])
+}
+
+// Conteúdo único e reutilizável: o mesmo registro serve às trilhas (Fase 3) e à Central de Conhecimento.
+model Content {
+  id               String           @id @default(cuid())
+  type             ContentType
+  title            String // espelha a versão vigente (ou o rascunho, se nunca publicado)
+  status           ContentStatus    @default(DRAFT)
+  categoryId       String?
+  category         Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  inLibrary        Boolean          @default(true) // visível na Central de Conhecimento
+  currentVersionId String?          @unique
+  currentVersion   ContentVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions         ContentVersion[] @relation("ContentVersions")
+  authorId         String?
+  author           User?            @relation("ContentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  viewCount        Int              @default(0)
+  publishedAt      DateTime? // primeira publicação
+  archivedAt       DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([status, type])
+  @@index([categoryId])
+}
+
+// Versões imutáveis após publicadas. Editar um conteúdo publicado cria um novo rascunho.
+model ContentVersion {
+  id                   String                @id @default(cuid())
+  contentId            String
+  content              Content               @relation("ContentVersions", fields: [contentId], references: [id], onDelete: Cascade)
+  currentOf            Content?              @relation("CurrentVersion")
+  number               Int
+  status               VersionStatus         @default(DRAFT)
+  title                String
+  description          String?
+  body                 Json? // documento do editor (Tiptap)
+  bodyHtml             String? // HTML gerado no servidor só com elementos permitidos
+  bodyText             String? // texto puro para busca
+  fileId               String?
+  file                 StoredFile?           @relation(fields: [fileId], references: [id], onDelete: Restrict)
+  url                  String?
+  durationSeconds      Int? // vídeo: informado pelo navegador no envio (apenas exibição)
+  changeNote           String?
+  requiresRecompletion Boolean               @default(false) // mudança relevante: exige nova conclusão (Fase 3)
+  assets               ContentVersionAsset[]
+  createdById          String?
+  createdBy            User?                 @relation("VersionCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  publishedById        String?
+  publishedBy          User?                 @relation("VersionPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  publishedAt          DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  @@unique([contentId, number])
+  @@index([contentId, status])
+}
+
+// Imagens incorporadas no corpo de um artigo (para controlar o acesso a elas).
+model ContentVersionAsset {
+  versionId String
+  fileId    String
+  version   ContentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  file      StoredFile     @relation(fields: [fileId], references: [id], onDelete: Restrict)
+
+  @@id([versionId, fileId])
+  @@index([fileId])
 }

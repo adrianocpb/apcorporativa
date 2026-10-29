@@ -6,6 +6,8 @@ export const PERMISSIONS = {
   USUARIOS_GERENCIAR: "usuarios.gerenciar",
   GRUPOS_GERENCIAR: "grupos.gerenciar",
   AUDITORIA_VER: "auditoria.ver",
+  CONTEUDOS_GERENCIAR: "conteudos.gerenciar",
+  CATEGORIAS_GERENCIAR: "categorias.gerenciar",
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -15,6 +17,8 @@ export const PERMISSION_DESCRIPTIONS: Record<PermissionKey, string> = {
   "usuarios.gerenciar": "Criar, editar, ativar e desativar usuários",
   "grupos.gerenciar": "Criar e editar grupos de usuários",
   "auditoria.ver": "Consultar o registro de auditoria",
+  "conteudos.gerenciar": "Criar, editar, publicar e arquivar conteúdos e enviar arquivos",
+  "categorias.gerenciar": "Organizar as categorias da Central de Conhecimento",
 };
 
 export const ROLE_KEYS = {

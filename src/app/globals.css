@@ -177,3 +177,118 @@ body {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Conteúdo de artigos e manuais (HTML gerado por src/lib/rich-text.ts e editor). */
+.rich-content {
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.rich-content > * + * {
+  margin-top: 0.85em;
+}
+.rich-content h2 {
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 600;
+  margin-top: 1.4em;
+}
+.rich-content h3 {
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+  margin-top: 1.2em;
+}
+.rich-content > :first-child {
+  margin-top: 0;
+}
+.rich-content strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.rich-content a {
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rich-content ul {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+.rich-content ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+.rich-content li > p {
+  margin: 0.2em 0;
+}
+.rich-content blockquote {
+  border-radius: 6px;
+  background: var(--info-subtle);
+  color: var(--ink);
+  padding: 12px 16px;
+}
+.rich-content hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+.rich-content figure img,
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.rich-content figcaption {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.rich-content .table-wrap,
+.rich-content .tableWrapper {
+  overflow-x: auto;
+}
+.rich-content table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.rich-content th,
+.rich-content td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.rich-content th {
+  background: var(--surface-hover);
+  color: var(--ink);
+  font-weight: 600;
+}
+.rich-content th > p,
+.rich-content td > p {
+  margin: 0;
+}
+/* Seleção de células e imagem no editor */
+.rich-content .selectedCell {
+  background: var(--primary-subtle);
+}
+.rich-content img.ProseMirror-selectednode {
+  outline: 2px solid var(--primary);
+}
+.rich-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--ink-muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.rich-content th > p:empty::after,
+.rich-content td > p:empty::after {
+  content: "\00a0";
+}

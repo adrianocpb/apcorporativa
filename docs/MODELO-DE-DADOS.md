@@ -15,13 +15,37 @@ LoginAttempt (independente)
 | --- | --- | --- |
 | `Role` | Perfil (`ADMIN`, `COLABORADOR`) | Chave única. Sincronizado do código por `seedBase`. |
 | `Permission` | Permissão granular (`usuarios.gerenciar`, …) | Catálogo em `src/server/auth/permissions.ts`. |
-| `RolePermission` | Permissões de cada perfil | Fase 2 acrescenta escopo opcional por categoria. |
+| `RolePermission` | Permissões de cada perfil | Escopo por categoria (gestor de uma área) fica para quando houver esse perfil; o catálogo já separa `conteudos.gerenciar` e `categorias.gerenciar`. |
 | `User` | Pessoa com acesso | `email` e `username` únicos (minúsculas). `status`: `INVITED` (sem senha), `ACTIVE`, `INACTIVE`. Nunca é apagado pela interface. |
 | `Group` / `GroupMember` | Agrupamento para atribuições em massa | Nome único. Grupo só é excluído se estiver vazio. |
 | `Session` | Sessão autenticada | `id` = SHA-256 do token do cookie. Expira por inatividade (8 h) e por limite absoluto (30 dias). |
 | `AuthToken` | Convite e redefinição de senha | Só o hash é gravado. Uso único (`usedAt`), expira (convite 72 h, redefinição 24 h). Gerar novo invalida os anteriores do mesmo tipo. |
 | `LoginAttempt` | Limite de tentativas | 5 falhas por identificador ou 20 por IP em 15 min bloqueiam novas tentativas. |
 | `AuditLog` | Registro de operações administrativas | Somente inserção; `details` em JSON sem senhas, hashes ou tokens. |
+
+## Fase 2 — conteúdo
+
+```
+Category 1─N Category (subcategorias, 2 níveis) · Category 1─N Content
+Content 1─N ContentVersion · Content 1─1 ContentVersion (versão vigente)
+ContentVersion N─1 StoredFile (arquivo principal)
+ContentVersion N─M StoredFile (imagens no texto, via ContentVersionAsset)
+```
+
+| Entidade | Finalidade | Regras |
+| --- | --- | --- |
+| `Category` | Categoria ou subcategoria | Máximo de dois níveis. Nome único por nível. Arquivar não afeta conteúdos (só some dos seletores); a principal só é arquivada sem subcategorias ativas. |
+| `Content` | Conteúdo reutilizável (trilhas e biblioteca) | `type`: VIDEO, PDF, IMAGE, ARTICLE, FAQ, LINK. `status`: DRAFT (nunca publicado), PUBLISHED, ARCHIVED. `inLibrary` controla a visibilidade na Central. `title` espelha a versão vigente. |
+| `ContentVersion` | Versão do conteúdo | `number` sequencial por conteúdo. DRAFT → PUBLISHED → SUPERSEDED. Versões publicadas não são alteradas. `requiresRecompletion` marca mudança relevante (usada na Fase 3). |
+| `StoredFile` | Metadados do arquivo | `storageKey` interno e único, nome original limpo, tipo detectado pelo conteúdo, tamanho, SHA-256. Bytes no armazenamento, nunca no banco. Não pode ser apagado enquanto uma versão o referenciar. |
+| `ContentVersionAsset` | Imagens incorporadas em artigos | Libera o acesso às imagens de artigos publicados. |
+
+### Versionamento
+
+- Editar um conteúdo publicado cria (ou atualiza) **um** rascunho; a versão vigente continua no ar.
+- Publicar: o rascunho vira vigente e a anterior passa a SUPERSEDED, com texto e arquivo preservados.
+- Mudança relevante (`requiresRecompletion`): as conclusões anteriores **não** são apagadas; a Fase 3 usará a marca para pedir nova conclusão nas trilhas em andamento.
+- Excluir só é permitido para conteúdo que nunca foi publicado. Publicados são arquivados.
 
 ## Regras de integridade
 

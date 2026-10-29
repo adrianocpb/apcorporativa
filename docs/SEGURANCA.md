@@ -31,6 +31,19 @@
 
 `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` (links de convite não vazam para outros sites), `Permissions-Policy`, CSP com `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`. Server Actions do Next verificam a origem (proteção CSRF).
 
+## Arquivos
+
+- Upload só para quem tem `conteudos.gerenciar`, com verificação de **mesma origem** (CSRF) e sessão.
+- Tipo validado pelos bytes do arquivo, não pela extensão nem pelo tipo declarado. Aceitos: MP4, WebM, PDF, PNG, JPG, WebP, GIF. SVG e HTML recusados (risco de script).
+- Limites configuráveis (padrão: vídeo 2 GB, PDF 50 MB, imagem 10 MB), aplicados durante a gravação.
+- Nomes internos aleatórios; o nome original é limpo e usado só para exibição/download. Gravação em arquivo temporário e renomeação, sem sobrescrever.
+- Leitura: gestores de conteúdo veem tudo; demais usuários, só arquivos da versão vigente de conteúdo publicado (ou imagens incorporadas nela). Sem acesso e inexistente respondem igual (404).
+- Respostas de arquivo com `nosniff`, `Content-Disposition` e `frame-ancestors 'self'` (PDF exibido apenas dentro da própria aplicação).
+
+## Conteúdo rico
+
+- O HTML de artigos é gerado no servidor a partir de uma lista fechada de elementos; texto sempre escapado; links só http/https/mailto/internos (externos com `noopener noreferrer`); imagens só da própria plataforma. Testado contra `<script>`, `javascript:` e injeção de atributos.
+
 ## Segredos e dados
 
 - `.env` fora do Git; `.env.example` sem valores reais.

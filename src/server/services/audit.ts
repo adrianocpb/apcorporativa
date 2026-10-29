@@ -46,6 +46,18 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "grupo.membros_adicionados": "Membros adicionados ao grupo",
   "grupo.membro_removido": "Membro removido do grupo",
   "sistema.admin_inicial": "Administrador inicial criado",
+  "conteudo.criado": "Conteúdo criado",
+  "conteudo.rascunho_salvo": "Rascunho de conteúdo salvo",
+  "conteudo.publicado": "Conteúdo publicado",
+  "conteudo.arquivado": "Conteúdo arquivado",
+  "conteudo.restaurado": "Conteúdo restaurado",
+  "conteudo.rascunho_descartado": "Rascunho de conteúdo descartado",
+  "conteudo.excluido": "Conteúdo excluído (nunca publicado)",
+  "categoria.criada": "Categoria criada",
+  "categoria.editada": "Categoria editada",
+  "categoria.reordenada": "Categoria reordenada",
+  "categoria.arquivada": "Categoria arquivada",
+  "categoria.restaurada": "Categoria restaurada",
 };
 
 export const AUDIT_PAGE_SIZE = 30;

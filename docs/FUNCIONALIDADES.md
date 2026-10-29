@@ -19,14 +19,28 @@
 - [x] Layout com menu lateral, barra superior, menu em gaveta no celular, tema claro/escuro
 - [x] Design system com tokens RC+ (cores fortes) e componentes reutilizáveis
 - [x] Script do primeiro administrador e script de backup
-- [x] 35 testes automatizados; CI no GitHub Actions
+- [x] Testes automatizados; CI no GitHub Actions
+
+## Implementadas — Fase 2 (Gestão de conteúdo)
+
+- [x] Upload de vídeos (MP4/WebM), PDFs e imagens com barra de progresso, validação de tipo real e de tamanho
+- [x] Armazenamento em disco com nomes seguros, sem sobrescrita, preparado para S3
+- [x] Entrega autenticada de arquivos, com Range para vídeo e controle de acesso por publicação
+- [x] Categorias e subcategorias: criar, editar, reordenar, arquivar e restaurar
+- [x] Conteúdos: vídeo, PDF, imagem, artigo/manual, pergunta frequente e link externo
+- [x] Editor rico: títulos, listas, negrito, itálico, sublinhado, links, imagens com descrição e legenda, tabelas, destaques; modo Visualizar
+- [x] Rascunho, pré-visualização, publicação, arquivamento, restauração e exclusão de nunca publicados
+- [x] Versionamento com histórico, substituição segura de arquivo e marcação de mudança relevante
+- [x] Um mesmo conteúdo serve à biblioteca e às trilhas (opção "Exibir na Central de Conhecimento")
+- [x] Auditoria das operações de conteúdo e categoria; indicadores na visão geral
 
 ## Pendentes (próximas fases)
 
-- [ ] **Fase 2 — Conteúdo:** upload de vídeos/PDFs/imagens, armazenamento, categorias, artigos com editor rico, FAQ, publicação, arquivamento e versionamento
 - [ ] **Fase 3 — Trilhas:** trilhas, módulos, ordenação por arrastar e soltar, atribuição a usuários/grupos, desbloqueio sequencial, progresso e retomada, conclusão validada no servidor
 - [ ] **Fase 4 — Gamificação:** pontos, níveis, conquistas, notificações
 - [ ] **Fase 5 — Central de Conhecimento:** busca, filtros, favoritos, mais acessados
 - [ ] **Fase 6 — Relatórios:** indicadores, progresso individual, exportação CSV
+- [ ] Escopo de permissão por categoria (gestor de conteúdo de uma área)
+- [ ] Limpeza de arquivos enviados e não usados em nenhum conteúdo
 - [ ] Envio de e-mail (SMTP) — fora do MVP
 - [ ] Migração para PostgreSQL — após a validação

@@ -24,6 +24,10 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     const adminItems: NavSection["items"] = [
       { href: "/admin", label: "Visão geral", icon: "visao", exact: true },
     ];
+    if (hasPermission(user, PERMISSIONS.CONTEUDOS_GERENCIAR))
+      adminItems.push({ href: "/admin/conteudos", label: "Conteúdos", icon: "conteudos" });
+    if (hasPermission(user, PERMISSIONS.CATEGORIAS_GERENCIAR))
+      adminItems.push({ href: "/admin/categorias", label: "Categorias", icon: "categorias" });
     if (hasPermission(user, PERMISSIONS.USUARIOS_GERENCIAR))
       adminItems.push({ href: "/admin/usuarios", label: "Usuários", icon: "usuarios" });
     if (hasPermission(user, PERMISSIONS.GRUPOS_GERENCIAR))

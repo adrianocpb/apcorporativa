@@ -5,7 +5,7 @@
 | Item | Local | Observação |
 | --- | --- | --- |
 | Banco de dados | `data/app.db` (SQLite) | Usuários, sessões, auditoria e, nas próximas fases, progresso e pontos |
-| Arquivos enviados | `storage/` (a partir da Fase 2) | Vídeos, PDFs e imagens |
+| Arquivos enviados | `storage/` (ou `STORAGE_DIR`) | Vídeos, PDFs e imagens. Copie a pasta inteira junto com o backup do banco: o banco guarda só as referências. |
 | Configuração | `.env` | Guardar em cofre de segredos, não junto com o backup comum |
 
 ## Fazer backup (SQLite)

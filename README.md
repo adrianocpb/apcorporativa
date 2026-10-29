@@ -2,11 +2,11 @@
 
 Plataforma interna de gestão do conhecimento e aprendizagem: onboarding de novos colaboradores, trilhas de treinamento, Central de Conhecimento e gamificação.
 
-> **Status:** Fase 1 (Fundação) concluída — autenticação, perfis e permissões, usuários, grupos, auditoria, layout e design system. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+> **Status:** Fases 1 (Fundação) e 2 (Gestão de conteúdo) concluídas — autenticação, usuários, grupos, auditoria, design system, upload de vídeos/PDFs/imagens, editor de manuais, FAQ, categorias, publicação e versionamento. Veja [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · Prisma 7 · SQLite (validação) → PostgreSQL (produção) · Tailwind CSS 4 · Radix UI · Tabler Icons · Argon2id · Vitest
+Next.js 16 (App Router) · React 19 · TypeScript · Prisma 7 · SQLite (validação) → PostgreSQL (produção) · Tailwind CSS 4 · Radix UI · Tabler Icons · Tiptap (editor) · Argon2id · Vitest
 
 Detalhes e justificativas: [docs/PLANO-TECNICO.md](docs/PLANO-TECNICO.md) e [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 
@@ -15,7 +15,7 @@ Detalhes e justificativas: [docs/PLANO-TECNICO.md](docs/PLANO-TECNICO.md) e [doc
 - Node.js 22.12 ou superior (desenvolvido com Node 24)
 - npm 10+
 
-Não é preciso instalar banco de dados: na fase de validação o SQLite é um arquivo em `data/`.
+Não é preciso instalar banco de dados: na fase de validação o SQLite é um arquivo em `data/` e os arquivos enviados ficam em `storage/`.
 
 ## Primeira execução
 
@@ -52,6 +52,10 @@ Acesse http://localhost:3000.
 4. Esqueceu a senha? O administrador gera um link de redefinição (24 h) na página do usuário.
 
 Não há envio de e-mail nesta versão (decisão D5); a integração SMTP pode ser adicionada sem mudar os fluxos.
+
+## Conteúdos
+
+Em **Administração → Conteúdos**: vídeos (MP4/WebM), PDFs, imagens, artigos/manuais escritos no editor, perguntas frequentes e links externos. Cada conteúdo é salvo como rascunho, pré-visualizado e publicado; editar algo publicado cria uma nova versão sem tirar a atual do ar, e o histórico de versões fica preservado. **Categorias** organizam a Central de Conhecimento em dois níveis.
 
 ## Documentação
 

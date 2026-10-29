@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  IconFilePencil,
+  IconFiles,
   IconMailForward,
   IconUserCheck,
   IconUserOff,
@@ -9,7 +11,8 @@ import {
 } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
-import { PERMISSIONS } from "@/server/auth/permissions";
+import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
+import { getContentStats } from "@/server/services/contents";
 import { getAdminOverview } from "@/server/services/admin-overview";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardHeader, StatCard } from "@/components/ui/card";
@@ -24,6 +27,9 @@ export const metadata: Metadata = { title: "Visão geral" };
 export default async function AdminOverviewPage() {
   const actor = await requirePermission(PERMISSIONS.ADMIN_ACESSAR);
   const data = await getAdminOverview(db, actor);
+  const contents = hasPermission(actor, PERMISSIONS.CONTEUDOS_GERENCIAR)
+    ? await getContentStats(db, actor)
+    : null;
   return (
     <>
       <PageHeader
@@ -62,6 +68,19 @@ export default async function AdminOverviewPage() {
           tone="info"
         />
       </div>
+
+      {contents && (
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard label="Conteúdos publicados" value={formatNumber(contents.published)} icon={<IconFiles />} />
+          <StatCard
+            label="Rascunhos"
+            value={formatNumber(contents.draft)}
+            hint="Ainda não publicados"
+            icon={<IconFilePencil />}
+            tone="warning"
+          />
+        </div>
+      )}
 
       <Card className="mt-6">
         <CardHeader

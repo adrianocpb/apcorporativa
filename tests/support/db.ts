@@ -10,6 +10,13 @@ export const db: Db = createDbClient(TEST_DATABASE_URL);
 
 // Ordem respeita as chaves estrangeiras.
 const TABLES = [
+  "ContentVersionAsset",
+  'UPDATE "Content" SET "currentVersionId" = NULL',
+  "ContentVersion",
+  "Content",
+  "StoredFile",
+  'DELETE FROM "Category" WHERE "parentId" IS NOT NULL',
+  "Category",
   "AuditLog",
   "LoginAttempt",
   "AuthToken",
@@ -23,8 +30,8 @@ const TABLES = [
 ];
 
 export async function resetDb() {
-  for (const table of TABLES) {
-    await db.$executeRawUnsafe(`DELETE FROM "${table}"`);
+  for (const entry of TABLES) {
+    await db.$executeRawUnsafe(/\s/.test(entry) ? entry : `DELETE FROM "${entry}"`);
   }
   await seedBase(db);
 }

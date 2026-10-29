@@ -30,7 +30,11 @@ SQLite (data/app.db) → PostgreSQL em produção
 | `src/components/forms/` | Componentes de formulário reutilizáveis |
 | `src/server/` | Código exclusivo do servidor |
 | `src/lib/` | Utilitários puros (formatação pt-BR, validação Zod, rótulos) |
-| `src/proxy.ts` | Redireciona para o login quando não há cookie (checagem otimista) |
+| `src/proxy.ts` | Redireciona para o login quando não há cookie (checagem otimista). Não atua em `/api`. |
+| `src/app/api/arquivos/` | Upload em fluxo (POST) e entrega autenticada de arquivos com suporte a Range (GET) |
+| `src/server/storage/` | `StorageProvider` e implementação em disco local |
+| `src/components/content/` | Editor rico (Tiptap), campo de upload, visualizador por tipo |
+| `src/lib/rich-text.ts` | Converte o documento do editor em HTML seguro (lista fechada de elementos) |
 | `scripts/` | `criar-admin.ts`, `backup.ts` |
 | `tests/` | Unitários e de integração |
 
@@ -64,3 +68,16 @@ Como a permissão é verificada no serviço, chamar a action diretamente (sem a 
 | Segredos | `.env` local | Variáveis de ambiente do servidor |
 
 O SQLite atende um piloto com dezenas de usuários em **um único servidor**. Para várias instâncias, migre para PostgreSQL (ver seção B.11 do plano).
+
+## Arquivos (Fase 2)
+
+- **Upload em fluxo:** o navegador envia o arquivo como corpo de `POST /api/arquivos?tipo=VIDEO|PDF|IMAGE` (sem multipart), com barra de progresso. O servidor lê os primeiros bytes para identificar o tipo real, aplica o limite de tamanho enquanto grava, calcula o SHA-256 e salva com nome interno aleatório (`pdf/2026/10/<uuid>.pdf`). Vídeos grandes nunca ficam inteiros na memória nem no banco.
+- **Entrega:** `GET /api/arquivos/:id` valida sessão e permissão a cada requisição e suporta `Range` (avançar e retomar vídeo). Os arquivos nunca ficam em `public/`.
+- **Imutabilidade:** um arquivo nunca é sobrescrito; substituir cria nova versão do conteúdo apontando para um novo arquivo, e o antigo segue ligado à versão anterior.
+- **Produção:** implementar `StorageProvider` para S3-compatível (MinIO, R2, S3) e trocar em `getStorage()`. O restante do código não muda.
+- O proxy não atua em `/api` para não bufferizar uploads grandes; as rotas de API fazem a própria autenticação (401) e a verificação de origem (403).
+
+## Conteúdo e editor
+
+- Artigos e FAQs são editados com **Tiptap**; o documento é salvo em JSON e o servidor gera o HTML com `renderRichText`, que só aceita elementos e atributos conhecidos (títulos, parágrafos, listas, negrito, itálico, sublinhado, links http/https/mailto, imagens da própria plataforma com legenda, tabelas, destaque e linha divisória). O mesmo código gera o texto puro para a busca (Fase 5) e a lista de imagens incorporadas (controle de acesso).
+- O componente `ContentViewer` exibe cada tipo (vídeo, PDF em iframe, imagem, artigo, FAQ, link) e será reutilizado nas trilhas e na Central de Conhecimento.

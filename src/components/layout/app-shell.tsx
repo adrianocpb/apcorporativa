@@ -12,6 +12,8 @@ import {
   IconUsers,
   IconUsersGroup,
   IconChartBar,
+  IconFiles,
+  IconFolders,
   IconX,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -29,6 +31,8 @@ const ICONS = {
   usuarios: IconUsers,
   grupos: IconUsersGroup,
   auditoria: IconFileSearch,
+  conteudos: IconFiles,
+  categorias: IconFolders,
 };
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };

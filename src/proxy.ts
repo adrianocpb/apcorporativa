@@ -19,5 +19,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt).*)"],
+  // /api fica de fora: as rotas de API validam a sessão e respondem 401 (sem redirecionar),
+  // e o upload em fluxo não deve ser bufferizado pelo proxy.
+  matcher: ["/((?!api/|_next/static|_next/image|icon.svg|robots.txt).*)"],
 };
