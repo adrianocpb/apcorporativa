@@ -92,7 +92,7 @@ export function Avatar({ name, size = "md" }: { name: string; size?: "sm" | "md"
 export function ProgressBar({
   value,
   label,
-  tone = "primary",
+  tone = "success",
   showValue = true,
 }: {
   value: number;
@@ -101,13 +101,17 @@ export function ProgressBar({
   showValue?: boolean;
 }) {
   const pct = Math.max(0, Math.min(100, Math.round(value)));
-  const fill = { primary: "bg-primary", success: "bg-success", warning: "bg-warning", info: "bg-info" }[
-    tone
-  ];
+  // Trilho no tom suave e barra na cor cheia do mesmo tom (padrão: verde de sucesso).
+  const [track, fill] = {
+    primary: ["bg-primary-subtle", "bg-primary"],
+    success: ["bg-success-subtle", "bg-success"],
+    warning: ["bg-warning-subtle", "bg-warning"],
+    info: ["bg-info-subtle", "bg-info"],
+  }[tone];
   return (
     <div className="flex items-center gap-3">
       <div
-        className="h-2 flex-1 overflow-hidden rounded-full bg-primary-subtle"
+        className={cn("h-2 flex-1 overflow-hidden rounded-full", track)}
         role="progressbar"
         aria-label={label}
         aria-valuemin={0}

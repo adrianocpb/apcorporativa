@@ -57,7 +57,7 @@ export default async function LearnerTrackPage({ params }: PageProps<"/trilhas/[
             <CardBody className="flex flex-col gap-3">
               <p className="text-small text-ink-soft">Seu progresso</p>
               <p className="text-h3 font-medium text-ink">{state.percent}%</p>
-              <ProgressBar value={state.percent} label="Progresso na trilha" showValue={false} tone={state.completed ? "success" : "primary"} />
+              <ProgressBar value={state.percent} label="Progresso na trilha" showValue={false} />
               <p className="text-small text-ink-muted">
                 {state.completedRequiredCount} de {state.requiredCount} conteúdos obrigatórios concluídos
               </p>

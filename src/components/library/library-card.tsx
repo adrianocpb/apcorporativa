@@ -69,7 +69,7 @@ export function LibraryTile({ item }: { item: Card }) {
   return (
     <Link
       href={`/biblioteca/${item.id}`}
-      className="flex items-start gap-3 rounded-md bg-surface p-4 shadow-card transition-shadow hover:shadow-raised"
+      className="flex items-start gap-3 rounded-lg bg-surface p-4 shadow-card transition-shadow hover:shadow-raised"
     >
       <ContentTypeIcon type={item.type} size="sm" />
       <span className="min-w-0">

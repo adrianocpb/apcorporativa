@@ -10,7 +10,9 @@ import { logoutAction, markNotificationsReadAction } from "./actions";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const user = await requireUser();
-  const themeCookie = (await cookies()).get("apc_theme")?.value;
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("apc_theme")?.value;
+  const menuCollapsed = cookieStore.get("apc_menu")?.value === "recolhido";
   const theme: ThemePreference =
     themeCookie === "light" || themeCookie === "dark" ? themeCookie : "system";
 
@@ -61,6 +63,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         level: level.current ? { number: level.current.number, name: level.current.name } : null,
       }}
       theme={theme}
+      initialCollapsed={menuCollapsed}
       logoutAction={logoutAction}
       notifications={{
         unread: notifications.unread,

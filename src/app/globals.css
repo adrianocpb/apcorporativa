@@ -157,9 +157,9 @@
   --shadow-raised: var(--shadow-raised);
   --shadow-primary: var(--shadow-primary-btn);
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 
   --text-h3: 28px;
   --text-h3--line-height: 42px;
@@ -253,7 +253,7 @@ body {
   margin: 0.2em 0;
 }
 .rich-content blockquote {
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--info-subtle);
   color: var(--ink);
   padding: 12px 16px;
@@ -267,7 +267,7 @@ body {
 .rich-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid var(--border);
 }
 .rich-content figcaption {

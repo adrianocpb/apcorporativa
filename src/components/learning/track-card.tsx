@@ -20,7 +20,7 @@ export function TrackCard({
   return (
     <Link
       href={`/trilhas/${track.id}`}
-      className="flex flex-col gap-3 rounded-md bg-surface p-5 shadow-card transition-shadow hover:shadow-raised"
+      className="flex flex-col gap-3 rounded-lg bg-surface p-5 shadow-card transition-shadow hover:shadow-raised"
     >
       <div className="flex items-start gap-3">
         <span className="flex size-[38px] shrink-0 items-center justify-center rounded-md bg-primary-subtle text-primary-text" aria-hidden="true">
@@ -41,7 +41,7 @@ export function TrackCard({
         </div>
       </div>
       {track.description && <p className="line-clamp-2 text-small text-ink-soft">{track.description}</p>}
-      <ProgressBar value={percent} label={`Progresso em ${track.title}`} tone={completed ? "success" : "primary"} />
+      <ProgressBar value={percent} label={`Progresso em ${track.title}`} />
     </Link>
   );
 }

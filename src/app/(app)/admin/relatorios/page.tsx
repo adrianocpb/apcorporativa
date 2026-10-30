@@ -166,7 +166,7 @@ async function Overview({ actor, filters }: { actor: Actor; filters: Filters }) 
                     <Td className="hidden md:table-cell">{t.inProgress}</Td>
                     <Td>{t.completed}</Td>
                     <Td>
-                      <ProgressBar value={t.rate} label={`Taxa de conclusão de ${t.title}`} tone="success" />
+                      <ProgressBar value={t.rate} label={`Taxa de conclusão de ${t.title}`} />
                     </Td>
                     <Td className="hidden whitespace-nowrap lg:table-cell">{days(t.medianDays)}</Td>
                   </Tr>
@@ -198,7 +198,7 @@ async function Overview({ actor, filters }: { actor: Actor; filters: Filters }) 
                       <Td className="text-ink">{d.key}</Td>
                       <Td>{d.enrolled}</Td>
                       <Td>
-                        <ProgressBar value={d.rate} label={`Taxa de conclusão de ${d.key}`} tone="success" />
+                        <ProgressBar value={d.rate} label={`Taxa de conclusão de ${d.key}`} />
                       </Td>
                     </Tr>
                   ))}

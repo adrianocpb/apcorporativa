@@ -105,7 +105,7 @@ export default async function LearnerItemPage({ params }: PageProps<"/trilhas/[i
             <CardBody className="flex flex-col gap-4">
               <div>
                 <p className="mb-2 text-small text-ink-soft">Progresso na trilha</p>
-                <ProgressBar value={state.percent} label="Progresso na trilha" tone={state.completed ? "success" : "primary"} />
+                <ProgressBar value={state.percent} label="Progresso na trilha" />
               </div>
               <TrackOutline trackId={id} structure={structure} state={state} currentItemId={itemId} compact />
             </CardBody>

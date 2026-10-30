@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export function Card({ className, ...props }: ComponentProps<"section">) {
-  return <section className={cn("rounded-md bg-surface shadow-card", className)} {...props} />;
+  return <section className={cn("rounded-lg bg-surface shadow-card", className)} {...props} />;
 }
 
 export function CardHeader({

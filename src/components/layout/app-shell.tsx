@@ -6,6 +6,8 @@ import {
   IconChevronDown,
   IconFileSearch,
   IconLayoutDashboard,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
   IconLogout,
   IconMenu2,
   IconUserCircle,
@@ -57,17 +59,31 @@ function isActive(pathname: string, item: NavItem) {
   return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
-function Nav({ sections, onNavigate }: { sections: NavSection[]; onNavigate?: () => void }) {
+function Nav({
+  sections,
+  onNavigate,
+  collapsed = false,
+}: {
+  sections: NavSection[];
+  onNavigate?: () => void;
+  collapsed?: boolean;
+}) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Menu principal" className="flex flex-col gap-1 px-4">
+    <nav aria-label="Menu principal" className={cn("flex flex-col gap-1", collapsed ? "px-3" : "px-4")}>
       {sections.map((section, i) => (
         <div key={section.title ?? i} className="flex flex-col gap-1">
-          {section.title && (
-            <p className="mt-5 mb-1 px-3 text-small font-medium tracking-[0.2px] text-ink-muted uppercase">
-              {section.title}
-            </p>
-          )}
+          {section.title &&
+            (collapsed ? (
+              <>
+                <hr className="mx-2 my-3 border-line" aria-hidden="true" />
+                <p className="sr-only">{section.title}</p>
+              </>
+            ) : (
+              <p className="mt-5 mb-1 px-3 text-small font-medium tracking-[0.2px] text-ink-muted uppercase">
+                {section.title}
+              </p>
+            ))}
           {section.items.map((item) => {
             const Icon = ICONS[item.icon];
             const active = isActive(pathname, item);
@@ -77,15 +93,17 @@ function Nav({ sections, onNavigate }: { sections: NavSection[]; onNavigate?: ()
                 href={item.href}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
+                title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-body transition-colors",
+                  "flex items-center gap-3 rounded-md py-2 text-body transition-colors",
+                  collapsed ? "justify-center px-0" : "px-3",
                   active
                     ? "bg-primary text-on-primary shadow-primary"
                     : "text-ink-soft hover:bg-surface-hover",
                 )}
               >
                 <Icon className="size-[22px] shrink-0" stroke={1.5} aria-hidden="true" />
-                {item.label}
+                <span className={cn(collapsed && "sr-only")}>{item.label}</span>
               </Link>
             );
           })}
@@ -99,6 +117,7 @@ export function AppShell({
   sections,
   user,
   theme,
+  initialCollapsed = false,
   logoutAction,
   notifications,
   markNotificationsRead,
@@ -107,12 +126,20 @@ export function AppShell({
   sections: NavSection[];
   user: ShellUser;
   theme: ThemePreference;
+  initialCollapsed?: boolean;
   logoutAction: () => Promise<void>;
   notifications: { unread: number; items: NotificationItem[] };
   markNotificationsRead: () => Promise<void>;
   children: ReactNode;
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // Menu lateral recolhido (só ícones) no desktop; a escolha fica em cookie para o servidor renderizar igual.
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    document.cookie = `apc_menu=${next ? "recolhido" : "aberto"}; path=/; max-age=31536000; samesite=lax`;
+  }
   // O formulário de saída fica fora do menu: o menu fecha (e desmonta) antes de um envio interno.
   const logoutFormRef = useRef<HTMLFormElement>(null);
 
@@ -126,14 +153,38 @@ export function AppShell({
       </a>
 
       {/* Menu lateral fixo (desktop) */}
-      <aside className="fixed inset-y-0 left-0 hidden w-[260px] flex-col bg-surface shadow-card lg:flex">
-        <div className="flex h-16 items-center px-7">
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 hidden flex-col bg-surface shadow-card transition-[width] duration-200 lg:flex",
+          collapsed ? "w-[84px]" : "w-[260px]",
+        )}
+      >
+        <div className={cn("flex h-16 items-center", collapsed ? "justify-center px-3" : "px-7")}>
           <Link href="/" aria-label="Ir para o painel">
-            <BrandMark />
+            <BrandMark showName={!collapsed} />
           </Link>
         </div>
-        <div className="flex-1 overflow-y-auto pb-6">
-          <Nav sections={sections} />
+        <div className="flex-1 overflow-x-hidden overflow-y-auto pb-4">
+          <Nav sections={sections} collapsed={collapsed} />
+        </div>
+        <div className={cn("border-t border-line py-3", collapsed ? "px-3" : "px-4")}>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-expanded={!collapsed}
+            title={collapsed ? "Expandir menu" : undefined}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-md py-2 text-body text-ink-soft transition-colors hover:bg-surface-hover",
+              collapsed ? "justify-center px-0" : "px-3",
+            )}
+          >
+            {collapsed ? (
+              <IconLayoutSidebarLeftExpand className="size-[22px] shrink-0" stroke={1.5} aria-hidden="true" />
+            ) : (
+              <IconLayoutSidebarLeftCollapse className="size-[22px] shrink-0" stroke={1.5} aria-hidden="true" />
+            )}
+            <span className={cn(collapsed && "sr-only")}>{collapsed ? "Expandir menu" : "Recolher menu"}</span>
+          </button>
         </div>
       </aside>
 
@@ -160,9 +211,9 @@ export function AppShell({
         </Dialog.Portal>
       </Dialog.Root>
 
-      <div className="lg:pl-[260px]">
+      <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-[84px]" : "lg:pl-[260px]")}>
         <div className="mx-auto max-w-[1440px] px-4 pt-4 sm:px-6">
-          <header className="flex h-14 items-center justify-between gap-3 rounded-md bg-surface px-3 shadow-raised sm:px-4">
+          <header className="flex h-14 items-center justify-between gap-3 rounded-lg bg-surface px-3 shadow-raised sm:px-4">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}

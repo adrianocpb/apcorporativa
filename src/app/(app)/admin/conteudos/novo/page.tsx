@@ -32,7 +32,7 @@ export default async function NewContentPage({ searchParams }: PageProps<"/admin
             <Link
               key={t}
               href={`/admin/conteudos/novo?tipo=${t}`}
-              className="flex items-start gap-4 rounded-md bg-surface p-5 shadow-card transition-shadow hover:shadow-raised"
+              className="flex items-start gap-4 rounded-lg bg-surface p-5 shadow-card transition-shadow hover:shadow-raised"
             >
               <ContentTypeIcon type={t} size="lg" />
               <span>

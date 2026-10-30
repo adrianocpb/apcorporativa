@@ -1,6 +1,6 @@
 # Design system
 
-Base: **RC+ apps** (artefato "RC+ apps"): a marca-mãe é monocromática — preto RC+ (`#0E0E0E`) como cor de ação sobre o papel RC+ (`#EFF0EB`), cards brancos com sombra leve, Public Sans, raio de 6 px, grade de 24 px, ícones Tabler. Ilustrações e badges vêm do artefato "Assets ilustrados - plataforma gestão de conhecimento" (decisão D3, revista em 30/10/2026: substitui o violeta `#5E50EE`).
+Base: **RC+ apps** (artefato "RC+ apps"): a marca-mãe é monocromática — preto RC+ (`#0E0E0E`) como cor de ação sobre o papel RC+ (`#EFF0EB`), cards brancos com sombra leve, Public Sans, cantos arredondados (6 / 10 / 14 px: selos, controles, cards), grade de 24 px, ícones Tabler. Ilustrações e badges vêm do artefato "Assets ilustrados - plataforma gestão de conhecimento" (decisão D3, revista em 30/10/2026: substitui o violeta `#5E50EE`).
 
 Todos os tokens ficam em [`src/app/globals.css`](../src/app/globals.css). Nome do produto em [`src/lib/brand.ts`](../src/lib/brand.ts).
 
@@ -58,6 +58,8 @@ Componentes de conteúdo em `src/components/content`: `RichTextEditor` (editor c
 ## Padrões
 
 - Uma ação `primary` por área; ações secundárias em `tonal`.
+- Barras de progresso em verde (`success`) por padrão: trilho `success-subtle`, barra `success`, sempre com o número ao lado ou no texto.
+- Menu lateral recolhível no desktop (só ícones, com o nome no `title`); a escolha fica no cookie `apc_menu`.
 - Cor nunca sozinha: status sempre com palavra (“Ativo”, “Convite pendente”, “Inativo”).
 - Foco visível: anel sólido de 2 px `focus` em todos os controles; inputs em foco trocam a borda para `primary`.
 - Estados vazios explicam o que acontece e qual o próximo passo.
