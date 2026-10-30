@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Esqueci minha senha" };
 export default function ForgotPasswordPage() {
   return (
     <>
-      <h1 className="text-h5 font-medium text-ink">Esqueci minha senha</h1>
+      <h1 className="text-h4 font-medium text-ink">Esqueci minha senha</h1>
       <div className="mt-2 flex flex-col gap-3 text-body text-ink-soft">
         <p>Peça a um administrador da plataforma um link de redefinição de senha.</p>
         <p>

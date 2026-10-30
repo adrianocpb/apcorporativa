@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 300" width="260" height="300"><defs>
+<pattern id="b2ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.4" fill="#0E0E0E"></circle></pattern>
+<clipPath id="b2clip"><path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z"></path></clipPath>
+</defs>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="#FFFFFF"></path>
+<g clip-path="url(#b2clip)">
+<rect x="0" y="190" width="260" height="110" fill="url(#b2ht)"></rect>
+<path d="M0 190 H260" stroke="#0E0E0E" stroke-width="2"></path>
+<g transform="translate(5 47) scale(1.25)">
+<path d="M46 200 C46 160 68 142 100 142 C132 142 154 160 154 200 Z" fill="#0E0E0E"></path>
+<path d="M90 116 V144 H110 V116" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+<circle cx="100" cy="98" r="28" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<path d="M71 104 C64 70 92 60 112 64 C130 68 134 88 129 102 C124 88 112 80 96 82 C84 84 76 92 74 106 Z" fill="#0E0E0E"></path>
+<path d="M85 101 Q90 105 95 101" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linecap="round"></path>
+<path d="M105 101 Q110 105 115 101" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linecap="round"></path>
+<path d="M96 114 Q100 117 104 114" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linecap="round"></path>
+<path d="M64 198 Q58 180 62 168" fill="none" stroke="#0E0E0E" stroke-width="18" stroke-linecap="round"></path>
+<path d="M136 198 Q142 180 138 168" fill="none" stroke="#0E0E0E" stroke-width="18" stroke-linecap="round"></path>
+<path d="M56 152 L100 162 L144 152 L144 184 L100 194 L56 184 Z" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round"></path>
+<path d="M100 162 V194" fill="none" stroke="#0E0E0E" stroke-width="3"></path>
+<path d="M66 163 L90 168 M66 171 L90 176 M110 168 L134 163 M110 176 L134 171" fill="none" stroke="#0E0E0E" stroke-width="2" stroke-linecap="round"></path>
+<circle cx="58" cy="170" r="8" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<circle cx="142" cy="170" r="8" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+</g>
+</g>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round"></path></svg>

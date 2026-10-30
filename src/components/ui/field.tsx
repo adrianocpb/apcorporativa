@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 const controlBase =
   "w-full rounded-md border bg-surface text-body text-ink placeholder:text-ink-muted " +
   "transition-colors focus:border-primary focus:outline-none focus-visible:outline-none " +
-  "focus:ring-2 focus:ring-primary/25 disabled:opacity-45";
+  "focus:ring-1 focus:ring-primary disabled:opacity-45";
 
 function controlClasses(invalid?: boolean, className?: string) {
   return cn(
@@ -19,6 +19,8 @@ type FieldProps = {
   name: string;
   error?: string;
   hint?: ReactNode;
+  /** Conteúdo alinhado à direita do rótulo (ex.: link "Esqueci minha senha"). */
+  labelAside?: ReactNode;
   required?: boolean;
   children: (props: {
     id: string;
@@ -31,21 +33,24 @@ type FieldProps = {
 };
 
 /** Rótulo, dica e erro acessíveis em volta de qualquer controle. */
-export function Field({ label, name, error, hint, required, children, className }: FieldProps) {
+export function Field({ label, name, error, hint, labelAside, required, children, className }: FieldProps) {
   const id = useId();
   const hintId = hint ? `${id}-dica` : undefined;
   const errorId = error ? `${id}-erro` : undefined;
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-small font-medium text-ink">
-        {label}
-        {required && (
-          <span className="text-danger-text" aria-hidden="true">
-            {" "}
-            *
-          </span>
-        )}
-      </label>
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={id} className="text-small font-medium text-ink">
+          {label}
+          {required && (
+            <span className="text-danger-text" aria-hidden="true">
+              {" "}
+              *
+            </span>
+          )}
+        </label>
+        {labelAside}
+      </div>
       {children({
         id,
         name,

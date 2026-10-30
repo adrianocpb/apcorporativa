@@ -339,7 +339,7 @@ Passos: trocar `provider` e `DATABASE_URL` → gerar migração inicial para Pos
 | --- | --- | --- |
 | **D1** | Stack | ✅ Decidido: Next.js + TypeScript + Prisma, sessões próprias com Argon2id (seção B.2). |
 | **D2** | Banco | ✅ Decidido: **SQLite** na validação, PostgreSQL após aprovação (B.11). |
-| **D3** | Cores | ✅ Decidido: RC+ com violeta mais forte `#5E50EE` e status mais saturados (seção A.3). |
+| **D3** | Cores | ✅ Revisto em 30/10/2026: design system RC+ apps (monocromático, preto RC+) com os assets ilustrados — ver docs/DESIGN-SYSTEM.md. Antes: violeta `#5E50EE` (seção A.3). |
 | **D4** | Visibilidade do repositório | Recomendado **privado** (sistema interno); o dono do repositório continua podendo enviar commits normalmente. Se mantido público, nada sensível será versionado. |
 | **D5** | E-mail | ✅ Decidido: sem SMTP no MVP; links de convite/redefinição gerados pelo admin. |
 

@@ -1,95 +1,117 @@
 @import "tailwindcss";
 
 /*
- * Tokens do design system — base RC+ com cores de marca e status mais fortes.
- * Para aplicar a identidade da empresa, altere apenas este bloco.
+ * Tokens do design system RC+ apps (artefato "RC+ apps").
+ * A marca-mãe é monocromática: preto RC+ no claro, papel RC+ no escuro.
+ * Cores das empresas (rchub, dpi, bkp) só identificam a empresa ou aparecem nas ilustrações.
  * Documentação: docs/DESIGN-SYSTEM.md
  */
 :root {
   color-scheme: light;
-  --primary: #5e50ee;
-  --primary-hover: #4c3fd9;
-  --primary-subtle: rgba(94, 80, 238, 0.14);
-  --primary-text: #4b3fd0;
-  --on-primary: #ffffff;
+  --rcplus-black: #0e0e0e;
+  --rcplus-paper: #eff0eb;
+  --rchub: #ff4303;
+  --dpi: #f5195c;
+  --bkp: #0f96ff;
+  --focus: #0e0e0e;
 
-  --secondary: #6b6e7b;
-  --secondary-subtle: rgba(107, 110, 123, 0.16);
-  --secondary-text: #555864;
+  --primary: #0e0e0e;
+  --primary-hover: #2e2e2c;
+  --primary-subtle: rgba(14, 14, 14, 0.08);
+  --primary-text: #0e0e0e;
+  --on-primary: #eff0eb;
 
-  --success: #16a34a;
-  --success-subtle: rgba(22, 163, 74, 0.16);
-  --success-text: #15803d;
+  --secondary: #6b6b66;
+  --secondary-subtle: rgba(107, 107, 102, 0.16);
+  --secondary-text: #5c5c58;
 
-  --warning: #ea8a1a;
-  --warning-subtle: rgba(234, 138, 26, 0.18);
-  --warning-text: #95560b;
+  --success: #28c76f;
+  --success-subtle: rgba(40, 199, 111, 0.16);
+  --success-text: #197b45;
 
-  --danger: #e5383b;
-  --danger-subtle: rgba(229, 56, 59, 0.14);
-  --danger-text: #b42326;
+  --warning: #ff9f43;
+  --warning-subtle: rgba(255, 159, 67, 0.16);
+  --warning-text: #995f28;
 
-  --info: #0891b2;
-  --info-subtle: rgba(8, 145, 178, 0.14);
-  --info-text: #0e6f89;
+  --danger: #ff4c51;
+  --danger-subtle: rgba(255, 76, 81, 0.16);
+  --danger-text: #ba373b;
 
-  --bg-page: #f6f5fa;
+  --info: #00bad1;
+  --info-subtle: rgba(0, 186, 209, 0.16);
+  --info-text: #007584;
+
+  --bg-page: #eff0eb;
   --surface: #ffffff;
-  --surface-hover: rgba(47, 43, 61, 0.06);
-  --border: #e6e6e8;
-  --border-input: #cfcdd6;
-  --ink: #2f2b3d;
-  --ink-soft: #5d5a68;
-  --ink-muted: #8a8795;
+  --surface-hover: rgba(14, 14, 14, 0.05);
+  --border: #d6d6d0;
+  --border-input: #6b6b66;
+  --ink: #0e0e0e;
+  --ink-soft: #2e2e2c;
+  --ink-muted: #5c5c58;
 
-  --shadow-card: 0 2px 6px 0 rgba(47, 43, 61, 0.12);
-  --shadow-raised: 0 4px 18px 0 rgba(47, 43, 61, 0.16);
-  --shadow-primary-btn: 0 2px 6px 0 rgba(94, 80, 238, 0.32);
+  --shadow-card: 0 2px 6px 0 rgba(14, 14, 14, 0.08);
+  --shadow-raised: 0 4px 18px 0 rgba(14, 14, 14, 0.12);
+  --shadow-primary-btn: 0 2px 6px 0 rgba(14, 14, 14, 0.24);
 }
 
 /* Tema escuro: mesmo bloco aplicado pela preferência do sistema ou pela escolha do usuário. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --primary-subtle: rgba(124, 112, 255, 0.2);
-    --primary-text: #b3abfa;
-    --secondary-text: #b0b2bc;
-    --success-text: #4ade80;
-    --warning-text: #fbb45c;
-    --danger-text: #ff8a8c;
-    --info-text: #38c6e6;
-    --bg-page: #1f2233;
-    --surface: #2a2e44;
-    --surface-hover: rgba(225, 222, 245, 0.07);
-    --border: #3f4360;
-    --border-input: #575b78;
-    --ink: #e4e1f7;
-    --ink-soft: #b4b2c9;
-    --ink-muted: #8a8ca6;
-    --shadow-card: 0 2px 6px 0 rgba(15, 14, 26, 0.3);
-    --shadow-raised: 0 4px 18px 0 rgba(15, 14, 26, 0.4);
+    --focus: #eff0eb;
+    --primary: #eff0eb;
+    --primary-hover: #d6d6d0;
+    --primary-subtle: rgba(239, 240, 235, 0.12);
+    --primary-text: #eff0eb;
+    --on-primary: #0e0e0e;
+    --secondary: #8a8a85;
+    --secondary-subtle: rgba(138, 138, 133, 0.16);
+    --secondary-text: #a3a39d;
+    --success-text: #42ce80;
+    --warning-text: #ffa147;
+    --danger-text: #ff898c;
+    --info-text: #2bc6d9;
+    --bg-page: #0e0e0e;
+    --surface: #1a1a19;
+    --surface-hover: rgba(239, 240, 235, 0.06);
+    --border: #2e2e2c;
+    --border-input: #8a8a85;
+    --ink: #eff0eb;
+    --ink-soft: #d6d6d0;
+    --ink-muted: #a3a39d;
+    --shadow-card: 0 2px 6px 0 rgba(0, 0, 0, 0.32);
+    --shadow-raised: 0 4px 18px 0 rgba(0, 0, 0, 0.4);
+    --shadow-primary-btn: 0 2px 6px 0 rgba(0, 0, 0, 0.4);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --primary-subtle: rgba(124, 112, 255, 0.2);
-  --primary-text: #b3abfa;
-  --secondary-text: #b0b2bc;
-  --success-text: #4ade80;
-  --warning-text: #fbb45c;
-  --danger-text: #ff8a8c;
-  --info-text: #38c6e6;
-  --bg-page: #1f2233;
-  --surface: #2a2e44;
-  --surface-hover: rgba(225, 222, 245, 0.07);
-  --border: #3f4360;
-  --border-input: #575b78;
-  --ink: #e4e1f7;
-  --ink-soft: #b4b2c9;
-  --ink-muted: #8a8ca6;
-  --shadow-card: 0 2px 6px 0 rgba(15, 14, 26, 0.3);
-  --shadow-raised: 0 4px 18px 0 rgba(15, 14, 26, 0.4);
+  --focus: #eff0eb;
+  --primary: #eff0eb;
+  --primary-hover: #d6d6d0;
+  --primary-subtle: rgba(239, 240, 235, 0.12);
+  --primary-text: #eff0eb;
+  --on-primary: #0e0e0e;
+  --secondary: #8a8a85;
+  --secondary-subtle: rgba(138, 138, 133, 0.16);
+  --secondary-text: #a3a39d;
+  --success-text: #42ce80;
+  --warning-text: #ffa147;
+  --danger-text: #ff898c;
+  --info-text: #2bc6d9;
+  --bg-page: #0e0e0e;
+  --surface: #1a1a19;
+  --surface-hover: rgba(239, 240, 235, 0.06);
+  --border: #2e2e2c;
+  --border-input: #8a8a85;
+  --ink: #eff0eb;
+  --ink-soft: #d6d6d0;
+  --ink-muted: #a3a39d;
+  --shadow-card: 0 2px 6px 0 rgba(0, 0, 0, 0.32);
+  --shadow-raised: 0 4px 18px 0 rgba(0, 0, 0, 0.4);
+  --shadow-primary-btn: 0 2px 6px 0 rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -116,6 +138,11 @@
   --color-info: var(--info);
   --color-info-subtle: var(--info-subtle);
   --color-info-text: var(--info-text);
+  --color-rchub: var(--rchub);
+  --color-dpi: var(--dpi);
+  --color-bkp: var(--bkp);
+  --color-paper: var(--rcplus-paper);
+  --color-black: var(--rcplus-black);
 
   --color-page: var(--bg-page);
   --color-surface: var(--surface);
@@ -163,9 +190,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Foco visível em todos os controles: anel de 2px na cor de marca. */
+/* Foco visível em todos os controles: anel sólido de 2px, deslocado 2px. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 

@@ -28,6 +28,7 @@ import { useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Avatar } from "@/components/ui/feedback";
 import { BrandMark } from "@/components/layout/brand-mark";
+import { LevelChip } from "@/components/learning/level-badge";
 import { ThemeToggle, type ThemePreference } from "@/components/layout/theme-toggle";
 import { NotificationBell, type NotificationItem } from "@/components/layout/notification-bell";
 
@@ -50,7 +51,7 @@ const ICONS = {
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS; exact?: boolean };
 export type NavSection = { title?: string; items: NavItem[] };
 
-type ShellUser = { name: string; email: string; roleName: string };
+type ShellUser = { name: string; email: string; roleName: string; level: { number: number; name: string } | null };
 
 function isActive(pathname: string, item: NavItem) {
   return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -139,7 +140,7 @@ export function AppShell({
       {/* Menu lateral em gaveta (tablet e celular) */}
       <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-40 bg-[#1b1830]/50 lg:hidden" />
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 lg:hidden" />
           <Dialog.Content className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-surface shadow-raised lg:hidden">
             <Dialog.Title className="sr-only">Menu</Dialog.Title>
             <Dialog.Description className="sr-only">Navegação principal</Dialog.Description>
@@ -215,7 +216,10 @@ export function AppShell({
                     <div className="px-3 py-2">
                       <p className="truncate text-body font-medium text-ink">{user.name}</p>
                       <p className="truncate text-small text-ink-muted">{user.email}</p>
-                      <p className="text-small text-primary-text">{user.roleName}</p>
+                      <p className="text-small text-ink-soft">{user.roleName}</p>
+                      {user.level && (
+                        <LevelChip number={user.level.number} name={user.level.name} className="mt-2" />
+                      )}
                     </div>
                     <Menu.Separator className="my-1 h-px bg-line" />
                     <Menu.Item asChild>

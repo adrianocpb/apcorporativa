@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 300" width="260" height="300"><defs>
+<pattern id="b1ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.4" fill="#0E0E0E"></circle></pattern>
+<clipPath id="b1clip"><path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z"></path></clipPath>
+</defs>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="#FFFFFF"></path>
+<g clip-path="url(#b1clip)">
+<rect x="0" y="245" width="260" height="55" fill="url(#b1ht)"></rect>
+<path d="M0 245 H260" stroke="#0E0E0E" stroke-width="2"></path>
+<g transform="translate(5 47) scale(1.25)">
+<path d="M46 200 C46 160 68 142 100 142 C132 142 154 160 154 200 Z" fill="#0E0E0E"></path>
+<path d="M90 116 V144 H110 V116" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+<circle cx="100" cy="98" r="28" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<path d="M70 84 C72 58 128 58 130 84 Z" fill="#0E0E0E"></path>
+<rect x="58" y="80" width="84" height="9" rx="4.5" fill="#0E0E0E"></rect>
+<path d="M94 118 Q100 122 106 118" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linecap="round"></path>
+<path d="M62 198 Q54 146 74 114" fill="none" stroke="#0E0E0E" stroke-width="18" stroke-linecap="round"></path>
+<path d="M138 198 Q146 146 126 114" fill="none" stroke="#0E0E0E" stroke-width="18" stroke-linecap="round"></path>
+<rect x="72" y="92" width="26" height="22" rx="6" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></rect>
+<rect x="102" y="92" width="26" height="22" rx="6" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></rect>
+<rect x="96" y="98" width="8" height="8" fill="#0E0E0E"></rect>
+<circle cx="85" cy="103" r="6" fill="url(#b1ht)" stroke="#0E0E0E" stroke-width="2"></circle>
+<circle cx="115" cy="103" r="6" fill="url(#b1ht)" stroke="#0E0E0E" stroke-width="2"></circle>
+<circle cx="72" cy="112" r="8" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<circle cx="128" cy="112" r="8" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+</g>
+</g>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round"></path></svg>

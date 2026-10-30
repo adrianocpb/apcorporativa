@@ -7,7 +7,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { PageHeader } from "@/components/ui/page-header";
 import { Table, Td, Th, Tr } from "@/components/ui/table";
-import { LevelCard } from "@/components/learning/level-card";
+import { LevelCard, LevelJourney } from "@/components/learning/level-card";
 import { cn } from "@/lib/cn";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { describeCriteria, parseCriteria } from "@/lib/gamification";
@@ -65,6 +65,10 @@ export default async function AchievementsPage() {
             )}
           </CardBody>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <LevelJourney level={mine.level} />
       </div>
 
       <Card className="mt-6">

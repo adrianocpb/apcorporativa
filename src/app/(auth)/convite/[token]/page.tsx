@@ -14,7 +14,7 @@ export default async function InvitePage({ params }: PageProps<"/convite/[token]
   if (!record) return <InvalidLink />;
   return (
     <>
-      <h1 className="text-h5 font-medium text-ink">Olá, {firstName(record.user.name)}!</h1>
+      <h1 className="text-h4 font-medium text-ink">Olá, {firstName(record.user.name)}!</h1>
       <p className="mb-6 text-body text-ink-soft">
         Defina sua senha para ativar a conta. Você vai entrar com o e-mail{" "}
         <strong className="font-medium text-ink">{record.user.email}</strong>.

@@ -11,6 +11,7 @@ export function levelFor(levels: LevelDef[], total: number) {
   const span = next && current ? next.minPoints - current.minPoints : 0;
   const progress = next && current ? Math.min(100, Math.round(((total - current.minPoints) / span) * 100)) : 100;
   return {
+    levels: sorted,
     current,
     next,
     total,

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 300" width="260" height="300"><defs>
+<pattern id="b3ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.4" fill="#0E0E0E"></circle></pattern>
+<clipPath id="b3clip"><path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z"></path></clipPath>
+</defs>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="#FFFFFF"></path>
+<g clip-path="url(#b3clip)">
+<rect x="0" y="135" width="260" height="165" fill="url(#b3ht)"></rect>
+<path d="M0 135 H260" stroke="#0E0E0E" stroke-width="2"></path>
+<g transform="translate(5 47) scale(1.25)">
+<path d="M46 200 C46 160 68 142 100 142 C132 142 154 160 154 200 Z" fill="#0E0E0E"></path>
+<path d="M90 116 V144 H110 V116" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+<circle cx="100" cy="98" r="28" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<g fill="#0E0E0E"><circle cx="78" cy="86" r="10"></circle><circle cx="88" cy="74" r="11"></circle><circle cx="102" cy="69" r="12"></circle><circle cx="116" cy="74" r="11"></circle><circle cx="124" cy="87" r="9"></circle><rect x="76" y="72" width="48" height="14"></rect></g>
+<circle cx="90" cy="103" r="3" fill="#0E0E0E"></circle>
+<circle cx="110" cy="103" r="3" fill="#0E0E0E"></circle>
+<path d="M93 113 Q100 119 107 113" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linecap="round"></path>
+<rect x="58" y="138" width="84" height="52" rx="3" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></rect>
+<circle cx="100" cy="164" r="7" fill="url(#b3ht)" stroke="#0E0E0E" stroke-width="2"></circle>
+<rect x="46" y="188" width="108" height="10" rx="2" fill="#0E0E0E"></rect>
+<circle cx="62" cy="186" r="7" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+<circle cx="138" cy="186" r="7" fill="#FFFFFF" stroke="#0E0E0E" stroke-width="3"></circle>
+</g>
+</g>
+<path d="M3 133 A127 127 0 0 1 257 133 V297 H3 Z" fill="none" stroke="#0E0E0E" stroke-width="3" stroke-linejoin="round"></path></svg>

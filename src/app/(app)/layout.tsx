@@ -4,7 +4,7 @@ import type { ThemePreference } from "@/components/layout/theme-toggle";
 import { requireUser } from "@/server/auth/current-user";
 import { hasPermission, PERMISSIONS } from "@/server/auth/permissions";
 import { db } from "@/server/db";
-import { listNotifications } from "@/server/services/gamification";
+import { getLevelInfo, listNotifications } from "@/server/services/gamification";
 import { formatDateTime } from "@/lib/format";
 import { logoutAction, markNotificationsReadAction } from "./actions";
 
@@ -49,12 +49,17 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     sections.push({ title: "Administração", items: adminItems });
   }
 
-  const notifications = await listNotifications(db, user);
+  const [notifications, level] = await Promise.all([listNotifications(db, user), getLevelInfo(db, user.id)]);
 
   return (
     <AppShell
       sections={sections}
-      user={{ name: user.name, email: user.email, roleName: user.roleName }}
+      user={{
+        name: user.name,
+        email: user.email,
+        roleName: user.roleName,
+        level: level.current ? { number: level.current.number, name: level.current.name } : null,
+      }}
       theme={theme}
       logoutAction={logoutAction}
       notifications={{

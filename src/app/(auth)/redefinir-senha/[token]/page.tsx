@@ -13,7 +13,7 @@ export default async function ResetPasswordPage({ params }: PageProps<"/redefini
   if (!record) return <InvalidLink />;
   return (
     <>
-      <h1 className="text-h5 font-medium text-ink">Redefinir senha</h1>
+      <h1 className="text-h4 font-medium text-ink">Redefinir senha</h1>
       <p className="mb-6 text-body text-ink-soft">
         Escolha uma nova senha para <strong className="font-medium text-ink">{record.user.email}</strong>.
         As sessões abertas em outros dispositivos serão encerradas.
