@@ -11,7 +11,8 @@
 - [x] Troca da própria senha (Minha conta)
 - [x] Perfis Administrador e Colaborador com permissões granulares, validadas no servidor
 - [x] Usuários: cadastrar, editar, filtrar, paginar, desativar, reativar, gerar links
-- [x] Campos: nome, e-mail, login, área, cargo, perfil, data de entrada, status, data de criação
+- [x] Campos: nome, e-mail (é o acesso), área, perfil, data de entrada, grupos (já no cadastro), status, data de criação
+- [x] Ordem das trilhas definida pelo administrador (Onboarding primeiro; concluídas vão para o fim da grade do colaborador)
 - [x] Grupos: criar, editar, excluir (vazio), adicionar e remover membros, definir grupos do usuário
 - [x] Auditoria das operações administrativas, com filtro e paginação
 - [x] Visão geral administrativa (contas ativas, convites pendentes, inativas, grupos)

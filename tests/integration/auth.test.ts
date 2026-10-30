@@ -20,14 +20,11 @@ function tokenFromUrl(url: string) {
 }
 
 describe("login", () => {
-  it("entra com e-mail ou com login e cria sessão válida", async () => {
+  it("entra com o e-mail (sem diferenciar maiúsculas) e cria sessão válida", async () => {
     const user = await makeUser();
-    const byEmail = await login(db, { identifier: user.email, password: TEST_PASSWORD });
-    const byUsername = await login(db, {
-      identifier: user.username.toUpperCase(),
-      password: TEST_PASSWORD,
-    });
-    expect(byEmail.ok && byUsername.ok).toBe(true);
+    const byEmail = await login(db, { email: user.email, password: TEST_PASSWORD });
+    const upper = await login(db, { email: user.email.toUpperCase(), password: TEST_PASSWORD });
+    expect(byEmail.ok && upper.ok).toBe(true);
     if (!byEmail.ok) return;
     const session = await validateSessionToken(db, byEmail.token);
     expect(session?.user.id).toBe(user.id);
@@ -37,17 +34,17 @@ describe("login", () => {
 
   it("recusa senha errada e usuário inexistente com a mesma mensagem", async () => {
     const user = await makeUser();
-    const wrong = await login(db, { identifier: user.email, password: "senha-errada-123" });
-    const missing = await login(db, { identifier: "ninguem@x.test", password: "qualquer-1234" });
-    expect(wrong).toEqual({ ok: false, error: "E-mail/login ou senha incorretos." });
+    const wrong = await login(db, { email: user.email, password: "senha-errada-123" });
+    const missing = await login(db, { email: "ninguem@x.test", password: "qualquer-1234" });
+    expect(wrong).toEqual({ ok: false, error: "E-mail ou senha incorretos." });
     expect(missing).toEqual(wrong);
   });
 
   it("bloqueia usuário desativado e convite pendente", async () => {
     const inactive = await makeUser({ status: "INACTIVE" });
     const invited = await makeUser({ status: "INVITED" });
-    const r1 = await login(db, { identifier: inactive.email, password: TEST_PASSWORD });
-    const r2 = await login(db, { identifier: invited.email, password: TEST_PASSWORD });
+    const r1 = await login(db, { email: inactive.email, password: TEST_PASSWORD });
+    const r2 = await login(db, { email: invited.email, password: TEST_PASSWORD });
     expect(r1.ok).toBe(false);
     expect(!r1.ok && r1.error).toMatch(/desativada/);
     expect(r2.ok).toBe(false);
@@ -56,9 +53,9 @@ describe("login", () => {
   it("limita tentativas por identificador, inclusive com a senha correta", async () => {
     const user = await makeUser();
     for (let i = 0; i < MAX_FAILURES_PER_IDENTIFIER; i++) {
-      await login(db, { identifier: user.email, password: "senha-errada-123" });
+      await login(db, { email: user.email, password: "senha-errada-123" });
     }
-    const blocked = await login(db, { identifier: user.email, password: TEST_PASSWORD });
+    const blocked = await login(db, { email: user.email, password: TEST_PASSWORD });
     expect(!blocked.ok && blocked.error).toMatch(/Muitas tentativas/);
   });
 });
@@ -152,7 +149,7 @@ describe("redefinição e troca de senha", () => {
     });
     await resetPassword(db, { token: tokenFromUrl(url), password: "senha-redefinida-2026" });
     expect(await validateSessionToken(db, old.token)).toBeNull();
-    const r = await login(db, { identifier: user.email, password: "senha-redefinida-2026" });
+    const r = await login(db, { email: user.email, password: "senha-redefinida-2026" });
     expect(r.ok).toBe(true);
   });
 

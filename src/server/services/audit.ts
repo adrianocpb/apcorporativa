@@ -66,6 +66,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "trilha.estrutura_alterada": "Estrutura da trilha alterada",
   "trilha.atribuida": "Trilha atribuída",
   "trilha.atribuicao_removida": "Atribuição de trilha removida",
+  "trilha.reordenada": "Ordem das trilhas alterada",
   "gamificacao.regras_alteradas": "Regras de pontuação alteradas",
   "gamificacao.nivel_criado": "Nível criado",
   "gamificacao.nivel_editado": "Nível editado",

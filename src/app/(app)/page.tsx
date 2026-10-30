@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   const isAdmin = hasPermission(user, PERMISSIONS.ADMIN_ACESSAR);
   const [mine, level] = await Promise.all([getMyTracks(db, user), getLevelInfo(db, user.id)]);
   const next = mine.next;
-  const active = [...mine.inProgress, ...mine.notStarted];
+  const active = mine.active;
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
           {greeting()}, {firstName(user.name)}!
         </h1>
         <p className="text-body text-ink-soft">
-          {[user.jobTitle, user.department].filter(Boolean).join(" · ") || user.roleName}
+          {user.department ?? user.roleName}
         </p>
       </div>
 

@@ -57,7 +57,7 @@ export async function verifyAgainstDummy(password: string): Promise<false> {
 /** Retorna a mensagem de erro da política de senha, ou null se a senha for aceita. */
 export function checkPasswordPolicy(
   password: string,
-  identity: { email?: string | null; username?: string | null } = {},
+  identity: { email?: string | null } = {},
 ): string | null {
   if (password.length < PASSWORD_MIN_LENGTH) {
     return `A senha deve ter pelo menos ${PASSWORD_MIN_LENGTH} caracteres.`;
@@ -69,11 +69,11 @@ export function checkPasswordPolicy(
   if (COMMON_PASSWORDS.has(lower) || /^(.)\1+$/.test(password)) {
     return "Esta senha é muito comum. Escolha outra.";
   }
-  const parts = [identity.username, identity.email?.split("@")[0]]
+  const parts = [identity.email?.split("@")[0]]
     .filter((p): p is string => !!p && p.length >= 4)
     .map((p) => p.toLowerCase());
   if (parts.some((p) => lower.includes(p))) {
-    return "A senha não pode conter seu login ou e-mail.";
+    return "A senha não pode conter seu e-mail.";
   }
   return null;
 }

@@ -25,10 +25,11 @@ export async function createUserAction(
 ) {
   return runAction(async () => {
     const actor = await requireUser();
+    const groupIds = formData.getAll("groupIds").filter((v): v is string => typeof v === "string");
     const { user, invite } = await createUser(
       db,
       actor,
-      formToObject(formData),
+      { ...formToObject(formData), groupIds },
       await getRequestMeta(),
     );
     revalidatePath("/admin", "layout");

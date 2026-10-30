@@ -13,18 +13,18 @@ export const PASSWORD_HINT =
 export function NewPasswordForm({
   action,
   submitLabel,
-  username,
+  email,
 }: {
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
-  username: string;
+  email: string;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
       {state.message && <Alert tone="danger">{state.message}</Alert>}
-      {/* Ajuda gerenciadores de senha a associar a senha ao login correto. */}
-      <input type="text" name="username" value={username} autoComplete="username" readOnly hidden />
+      {/* Ajuda gerenciadores de senha a associar a senha ao e-mail correto. */}
+      <input type="email" name="email" value={email} autoComplete="username" readOnly hidden />
       <Field
         label="Nova senha"
         name="password"

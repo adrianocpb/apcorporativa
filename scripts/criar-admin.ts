@@ -1,7 +1,7 @@
 // Cria um administrador e imprime o link de convite para ele definir a própria senha.
 // Nenhuma senha é digitada no terminal nem gravada em arquivo.
 //
-// Uso: npm run admin:criar -- --nome "Maria Souza" --email maria@empresa.com --login maria.souza
+// Uso: npm run admin:criar -- --nome "Maria Souza" --email maria@empresa.com
 
 import "dotenv/config";
 import { parseArgs } from "node:util";
@@ -16,22 +16,19 @@ async function main() {
     options: {
       nome: { type: "string" },
       email: { type: "string" },
-      login: { type: "string" },
     },
   });
   const parsed = userInputSchema.safeParse({
     name: values.nome ?? "",
     email: values.email ?? "",
-    username: values.login ?? "",
     department: "",
-    jobTitle: "",
     hireDate: "",
     roleKey: "ADMIN",
   });
   if (!parsed.success) {
     console.error("Dados inválidos:");
     for (const issue of parsed.error.issues) console.error(`  - ${String(issue.path[0])}: ${issue.message}`);
-    console.error('\nUso: npm run admin:criar -- --nome "Nome Completo" --email e@empresa.com --login nome.sobrenome');
+    console.error('\nUso: npm run admin:criar -- --nome "Nome Completo" --email e@empresa.com');
     process.exitCode = 1;
     return;
   }
@@ -41,10 +38,10 @@ async function main() {
     await seedBase(db);
     const input = parsed.data;
     const exists = await db.user.findFirst({
-      where: { OR: [{ email: input.email }, { username: input.username }] },
+      where: { email: input.email },
     });
     if (exists) {
-      console.error("Já existe um usuário com este e-mail ou login.");
+      console.error("Já existe um usuário com este e-mail.");
       process.exitCode = 1;
       return;
     }
@@ -54,7 +51,6 @@ async function main() {
         data: {
           name: input.name,
           email: input.email,
-          username: input.username,
           roleId: role.id,
           status: "INVITED",
         },

@@ -8,7 +8,7 @@ import { toast } from "@/components/ui/toaster";
 import { PASSWORD_HINT } from "@/components/forms/new-password-form";
 import { changePasswordAction } from "../actions";
 
-export function ChangePasswordForm({ username }: { username: string }) {
+export function ChangePasswordForm({ email }: { email: string }) {
   const [state, action, pending] = useActionState(changePasswordAction, {});
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -22,7 +22,7 @@ export function ChangePasswordForm({ username }: { username: string }) {
   return (
     <form ref={formRef} action={action} className="flex max-w-md flex-col gap-4" noValidate>
       {state.ok === false && state.message && <Alert tone="danger">{state.message}</Alert>}
-      <input type="text" name="username" value={username} autoComplete="username" readOnly hidden />
+      <input type="email" name="email" value={email} autoComplete="username" readOnly hidden />
       <Field label="Senha atual" name="currentPassword" error={state.fieldErrors?.currentPassword}>
         {(p) => <Input {...p} type="password" autoComplete="current-password" />}
       </Field>

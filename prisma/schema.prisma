@@ -53,10 +53,8 @@ model RolePermission {
 model User {
   id           String     @id @default(cuid())
   name         String
-  email        String     @unique // sempre em minúsculas
-  username     String     @unique // identificador de acesso, minúsculas
+  email        String     @unique // identificador de acesso (minúsculas); futuro: SSO Microsoft
   department   String?
-  jobTitle     String?
   hireDate     DateTime?
   status       UserStatus @default(INVITED)
   passwordHash String?
@@ -150,7 +148,7 @@ model AuthToken {
 // Base para limitar tentativas de login (persistente entre reinícios).
 model LoginAttempt {
   id         String   @id @default(cuid())
-  identifier String // e-mail/login informado, em minúsculas
+  identifier String // e-mail informado, em minúsculas
   ip         String?
   success    Boolean
   createdAt  DateTime @default(now())
@@ -368,6 +366,7 @@ model Track {
   categoryId        String?
   category          Category?          @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   status            TrackStatus        @default(DRAFT)
+  displayOrder      Int                @default(0) // ordem na grade de trilhas do colaborador
   sequential        Boolean            @default(true) // etapas desbloqueadas em ordem
   isOnboarding      Boolean            @default(false)
   videoThresholdPct Int                @default(90) // % mínimo assistido para concluir vídeo
@@ -384,6 +383,7 @@ model Track {
   updatedAt         DateTime           @updatedAt
 
   @@index([status])
+  @@index([displayOrder])
 }
 
 model TrackModule {

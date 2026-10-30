@@ -14,6 +14,7 @@ import {
   deleteModule,
   removeAssignment,
   removeItem,
+  moveTrack,
   reorderTrack,
   setTrackStatus,
   updateItem,
@@ -142,4 +143,10 @@ export async function removeAssignmentAction(trackId: string, assignmentId: stri
     await removeAssignment(db, actor, assignmentId, await getRequestMeta());
     refresh(trackId);
   });
+}
+
+export async function moveTrackAction(trackId: string, direction: "up" | "down") {
+  const actor = await requireUser();
+  await moveTrack(db, actor, trackId, direction, await getRequestMeta());
+  revalidatePath("/", "layout");
 }

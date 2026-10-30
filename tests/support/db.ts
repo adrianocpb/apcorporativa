@@ -79,7 +79,6 @@ export async function makeUser(
     data: {
       name: opts.name ?? `Pessoa Teste ${counter}`,
       email: `pessoa${counter}@empresa.test`,
-      username: `pessoa${counter}`,
       roleId: role.id,
       status,
       passwordHash: status === "INVITED" || password === null ? null : await hashPassword(password),

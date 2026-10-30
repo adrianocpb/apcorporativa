@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormAction } from "@/components/forms/use-form-action";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Field, Input, Select } from "@/components/ui/field";
+import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { Alert } from "@/components/ui/feedback";
 import { CopyField } from "@/components/ui/copy-field";
 import { Modal } from "@/components/ui/modal";
@@ -15,9 +15,7 @@ import type { ActionState } from "@/server/actions";
 export type UserFormValues = {
   name: string;
   email: string;
-  username: string;
   department: string;
-  jobTitle: string;
   hireDate: string;
   roleKey: string;
 };
@@ -31,12 +29,15 @@ export function UserForm<T>({
   mode,
   departments,
   roleLocked,
+  groups = [],
 }: {
   action: (state: ActionState<T>, formData: FormData) => Promise<ActionState<T>>;
   defaultValues?: UserFormValues;
   mode: "create" | "edit";
   departments: string[];
   roleLocked?: boolean;
+  /** Na criação: grupos disponíveis (a pessoa já recebe as trilhas desses grupos). */
+  groups?: { id: string; name: string }[];
 }) {
   const [state, formAction, pending] = useFormAction(action);
   // O modal do convite abre a cada cadastro bem-sucedido até ser fechado.
@@ -46,6 +47,8 @@ export function UserForm<T>({
   // Após um envio com erro, reexibe o que foi digitado.
   const v = (state.ok === false ? state.values : undefined) ?? defaultValues;
   const err = state.fieldErrors ?? {};
+  // Fora do <form> para sobreviver à remontagem após erro de validação.
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
   useEffect(() => {
     if (!state.ok) return;
@@ -64,15 +67,6 @@ export function UserForm<T>({
           <Field label="E-mail" name="email" required error={err.email}>
             {(p) => <Input {...p} type="email" defaultValue={v?.email} autoComplete="off" />}
           </Field>
-          <Field
-            label="Login (identificador de acesso)"
-            name="username"
-            required
-            error={err.username}
-            hint="Letras minúsculas, números, ponto, hífen ou sublinhado."
-          >
-            {(p) => <Input {...p} defaultValue={v?.username} autoComplete="off" maxLength={40} />}
-          </Field>
           <Field label="Área ou departamento" name="department" error={err.department}>
             {(p) => (
               <>
@@ -84,9 +78,6 @@ export function UserForm<T>({
                 </datalist>
               </>
             )}
-          </Field>
-          <Field label="Cargo" name="jobTitle" error={err.jobTitle}>
-            {(p) => <Input {...p} defaultValue={v?.jobTitle} maxLength={80} />}
           </Field>
           <Field
             label="Data de entrada"
@@ -126,6 +117,40 @@ export function UserForm<T>({
               )
             }
           </Field>
+          {mode === "create" && (
+            <fieldset className="md:col-span-2">
+              <legend className="mb-1.5 text-small font-medium text-ink">Grupos</legend>
+              {groups.length === 0 ? (
+                <p className="text-small text-ink-muted">Nenhum grupo criado. Crie grupos em Administração → Grupos.</p>
+              ) : (
+                <>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {groups.map((g) => (
+                      <label
+                        key={g.id}
+                        className="flex cursor-pointer items-center gap-3 rounded-md border border-line px-3 py-2 hover:bg-surface-hover"
+                      >
+                        <Checkbox
+                          name="groupIds"
+                          value={g.id}
+                          checked={selectedGroups.includes(g.id)}
+                          onChange={(e) =>
+                            setSelectedGroups((cur) =>
+                              e.target.checked ? [...cur, g.id] : cur.filter((x) => x !== g.id),
+                            )
+                          }
+                        />
+                        <span className="text-body text-ink">{g.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-1.5 text-small text-ink-muted">
+                    A pessoa recebe na hora as trilhas atribuídas aos grupos escolhidos.
+                  </p>
+                </>
+              )}
+            </fieldset>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" loading={pending}>

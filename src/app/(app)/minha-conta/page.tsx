@@ -11,9 +11,7 @@ export default async function MyAccountPage() {
   const user = await requireUser();
   const rows: [string, string | null][] = [
     ["E-mail", user.email],
-    ["Login", user.username],
     ["Área", user.department],
-    ["Cargo", user.jobTitle],
     ["Perfil", user.roleName],
   ];
   return (
@@ -45,7 +43,7 @@ export default async function MyAccountPage() {
         <Card className="lg:col-span-7">
           <CardHeader title="Alterar senha" subtitle="As sessões em outros dispositivos serão encerradas." />
           <CardBody>
-            <ChangePasswordForm username={user.username} />
+            <ChangePasswordForm email={user.email} />
           </CardBody>
         </Card>
       </div>

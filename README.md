@@ -23,7 +23,7 @@ Não é preciso instalar banco de dados: na fase de validação o SQLite é um a
 npm install                 # instala dependências e gera o cliente Prisma
 cp .env.example .env        # no Windows (PowerShell): Copy-Item .env.example .env
 npm run db:setup            # cria o banco (migrações) e os papéis/permissões
-npm run admin:criar -- --nome "Seu Nome" --email voce@empresa.com --login seu.login
+npm run admin:criar -- --nome "Seu Nome" --email voce@empresa.com
 npm run dev
 ```
 

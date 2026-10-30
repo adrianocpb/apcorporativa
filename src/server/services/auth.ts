@@ -36,14 +36,14 @@ export type LoginResult =
   | { ok: true; token: string; cookieExpiresAt: Date }
   | { ok: false; error: string };
 
-const INVALID_CREDENTIALS = "E-mail/login ou senha incorretos.";
+const INVALID_CREDENTIALS = "E-mail ou senha incorretos.";
 
 export async function login(
   db: Db,
-  input: { identifier: string; password: string },
+  input: { email: string; password: string },
   meta: RequestMeta = {},
 ): Promise<LoginResult> {
-  const identifier = input.identifier.trim().toLowerCase();
+  const identifier = input.email.trim().toLowerCase();
 
   if (await isLoginBlocked(db, identifier, meta.ip)) {
     return {
@@ -53,7 +53,7 @@ export async function login(
   }
 
   const user = await db.user.findFirst({
-    where: identifier.includes("@") ? { email: identifier } : { username: identifier },
+    where: { email: identifier },
   });
 
   const passwordOk = user?.passwordHash

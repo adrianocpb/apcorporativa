@@ -16,11 +16,11 @@ LoginAttempt (independente)
 | `Role` | Perfil (`ADMIN`, `COLABORADOR`) | Chave única. Sincronizado do código por `seedBase`. |
 | `Permission` | Permissão granular (`usuarios.gerenciar`, …) | Catálogo em `src/server/auth/permissions.ts`. |
 | `RolePermission` | Permissões de cada perfil | Escopo por categoria (gestor de uma área) fica para quando houver esse perfil; o catálogo já separa `conteudos.gerenciar` e `categorias.gerenciar`. |
-| `User` | Pessoa com acesso | `email` e `username` únicos (minúsculas). `status`: `INVITED` (sem senha), `ACTIVE`, `INACTIVE`. Nunca é apagado pela interface. |
+| `User` | Pessoa com acesso | `email` único (minúsculas) é o identificador de acesso; futuro: SSO Microsoft. `status`: `INVITED` (sem senha), `ACTIVE`, `INACTIVE`. Nunca é apagado pela interface. |
 | `Group` / `GroupMember` | Agrupamento para atribuições em massa | Nome único. Grupo só é excluído se estiver vazio. |
 | `Session` | Sessão autenticada | `id` = SHA-256 do token do cookie. Expira por inatividade (8 h) e por limite absoluto (30 dias). |
 | `AuthToken` | Convite e redefinição de senha | Só o hash é gravado. Uso único (`usedAt`), expira (convite 72 h, redefinição 24 h). Gerar novo invalida os anteriores do mesmo tipo. |
-| `LoginAttempt` | Limite de tentativas | 5 falhas por identificador ou 20 por IP em 15 min bloqueiam novas tentativas. |
+| `LoginAttempt` | Limite de tentativas | 5 falhas por e-mail ou 20 por IP em 15 min bloqueiam novas tentativas. |
 | `AuditLog` | Registro de operações administrativas | Somente inserção; `details` em JSON sem senhas, hashes ou tokens. |
 
 ## Fase 2 — conteúdo
@@ -57,7 +57,7 @@ User 1─N ContentProgress (por versão de conteúdo) · User 1─N CompletionRe
 
 | Entidade | Finalidade | Regras |
 | --- | --- | --- |
-| `Track` | Trilha | DRAFT/PUBLISHED/ARCHIVED; `sequential`, `isOnboarding`, `videoThresholdPct` (padrão 90), `minReadSeconds` (padrão 30). |
+| `Track` | Trilha | DRAFT/PUBLISHED/ARCHIVED; `sequential`, `isOnboarding`, `videoThresholdPct` (padrão 90), `minReadSeconds` (padrão 30), `displayOrder` (ordem na grade do colaborador). |
 | `TrackModule` / `TrackItem` | Etapas e conteúdos | Ordem por `position`. Item aponta para o conteúdo (sem cópia), com `required` e `completionRule` (WATCH, CONFIRM, VIEW). Um conteúdo aparece uma vez por trilha. Conteúdo em uso não pode ser apagado (Restrict). |
 | `TrackAssignment` | Atribuição | Única por (trilha, pessoa) e (trilha, grupo). |
 | `Enrollment` | Matrícula materializada | Única por (trilha, pessoa). Criada ao publicar/atribuir/entrar no grupo. Nunca apagada: `removedAt` marca quem perdeu a atribuição antes de concluir. Guarda status, início, conclusão e `lastItemId` (onde parou). |

@@ -37,9 +37,9 @@ export async function GET(request: Request, { params }: RouteContext<"/api/relat
   try {
     if (tipo === "progresso") {
       const data = await getProgressRows(db, user, filters);
-      header = ["Pessoa", "E-mail", "Área", "Cargo", "Trilha", "Onboarding", "Situação", "Progresso (%)", "Onde parou", "Atribuída em", "Iniciada em", "Concluída em", "Dias para concluir", "Última atividade"];
+      header = ["Pessoa", "E-mail", "Área", "Trilha", "Onboarding", "Situação", "Progresso (%)", "Onde parou", "Atribuída em", "Iniciada em", "Concluída em", "Dias para concluir", "Última atividade"];
       rows = data.map((r) => [
-        r.user.name, r.user.email, r.user.department, r.user.jobTitle, r.track.title, r.track.isOnboarding,
+        r.user.name, r.user.email, r.user.department, r.track.title, r.track.isOnboarding,
         STATUS[r.status], r.percent, r.currentItem?.title, r.assignedAt, r.startedAt, r.completedAt, round(r.days), r.lastActivityAt,
       ]);
     } else if (tipo === "trilhas") {

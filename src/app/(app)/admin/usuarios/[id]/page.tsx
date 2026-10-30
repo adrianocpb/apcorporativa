@@ -174,9 +174,7 @@ export default async function UserDetailPage({ params }: PageProps<"/admin/usuar
                 defaultValues={{
                   name: user.name,
                   email: user.email,
-                  username: user.username,
                   department: user.department ?? "",
-                  jobTitle: user.jobTitle ?? "",
                   hireDate: toDateInputValue(user.hireDate),
                   roleKey: user.role.key,
                 }}

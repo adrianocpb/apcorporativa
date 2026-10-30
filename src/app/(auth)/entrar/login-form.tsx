@@ -13,13 +13,13 @@ export function LoginForm({ next }: { next: string }) {
     <form key={state.at ?? 0} action={action} className="flex flex-col gap-4" noValidate>
       {state.message && <Alert tone="danger">{state.message}</Alert>}
       <input type="hidden" name="next" value={next} />
-      <Field label="E-mail ou login" name="identifier" error={state.fieldErrors?.identifier}>
+      <Field label="E-mail" name="email" error={state.fieldErrors?.email}>
         {(p) => (
           <Input
             {...p}
-            type="text"
+            type="email"
             autoComplete="username"
-            defaultValue={state.values?.identifier}
+            defaultValue={state.values?.email}
             autoFocus
           />
         )}

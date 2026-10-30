@@ -5,7 +5,7 @@
 - Senhas com **Argon2id** (19 MiB, 2 iterações — mínimo OWASP). Nunca em texto puro.
 - Política: mínimo 10 caracteres, bloqueio de senhas comuns e de senhas que contenham o login ou o e-mail.
 - Login por e-mail ou login. Resposta idêntica para usuário inexistente e senha errada; verificação de hash executada mesmo quando o usuário não existe (tempo de resposta uniforme).
-- **Limite de tentativas** persistente: 5 falhas por identificador ou 20 por IP em 15 minutos.
+- **Limite de tentativas** persistente: 5 falhas por e-mail ou 20 por IP em 15 minutos.
 - Sem senhas padrão: contas são criadas sem senha e ativadas por **link de convite de uso único**. O primeiro administrador também (`npm run admin:criar`).
 
 ## Sessões

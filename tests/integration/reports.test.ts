@@ -30,7 +30,6 @@ async function person(department: string): Promise<SessionUser> {
     data: {
       name: `Pessoa ${n}`,
       email: `p${n}@empresa.test`,
-      username: `p${n}`,
       department,
       roleId: role.id,
       status: "ACTIVE",

@@ -303,3 +303,45 @@ describe("administração", () => {
     await expect(getTrackForLearner(db, outsider, track.id)).rejects.toBeInstanceOf(NotFoundError);
   });
 });
+
+describe("ordem de exibição", () => {
+  it("novas trilhas vão para o fim; o administrador reordena; a grade segue a ordem e o cartão segue a última atividade", async () => {
+    const { moveTrack, listTracks } = await import("@/server/services/tracks");
+    const admin = await makeActor();
+    const doc = JSON.stringify({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "x" }] }] });
+    const mk = async (title: string) => {
+      const c = await createContent(db, admin, "ARTICLE", { title: `${title} — texto`, body: doc });
+      await publishContent(db, admin, c.id);
+      const t = await createTrack(db, admin, { title, minReadSeconds: "0" });
+      await addItems(db, admin, (await getTrackForEdit(db, admin, t.id)).modules[0].id, [c.id]);
+      await setTrackStatus(db, admin, t.id, "publish");
+      return t;
+    };
+    const pam = await mk("Plataforma PAM");
+    const onboarding = await mk("Onboarding");
+    expect((await listTracks(db, admin)).map((t) => t.title)).toEqual(["Plataforma PAM", "Onboarding"]);
+    await moveTrack(db, admin, onboarding.id, "up");
+    expect((await listTracks(db, admin)).map((t) => t.title)).toEqual(["Onboarding", "Plataforma PAM"]);
+
+    const user = await makeUser();
+    await assignTrack(db, admin, pam.id, { userIds: [user.id] });
+    await assignTrack(db, admin, onboarding.id, { userIds: [user.id] });
+    const learner = await sessionUserOf(user.id);
+    let mine = await getMyTracks(db, learner);
+    expect(mine.active.map((t) => t.track.title)).toEqual(["Onboarding", "Plataforma PAM"]);
+    expect(mine.next?.track.title).toBe("Onboarding");
+
+    // Começar pela PAM: o cartão principal continua de onde parou; a grade mantém a ordem.
+    const pamItem = (await getTrackForEdit(db, admin, pam.id)).modules[0].items[0];
+    await openItem(db, learner, pam.id, pamItem.id);
+    mine = await getMyTracks(db, learner);
+    expect(mine.next?.track.title).toBe("Plataforma PAM");
+    expect(mine.active.map((t) => t.track.title)).toEqual(["Onboarding", "Plataforma PAM"]);
+
+    // Concluída sai da grade e vai para "Concluídas".
+    await confirmCompletion(db, learner, pam.id, pamItem.id);
+    mine = await getMyTracks(db, learner);
+    expect(mine.active.map((t) => t.track.title)).toEqual(["Onboarding"]);
+    expect(mine.completed.map((t) => t.track.title)).toEqual(["Plataforma PAM"]);
+  });
+});

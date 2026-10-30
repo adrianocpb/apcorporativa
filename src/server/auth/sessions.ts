@@ -11,9 +11,7 @@ export type SessionUser = {
   id: string;
   name: string;
   email: string;
-  username: string;
   department: string | null;
-  jobTitle: string | null;
   roleKey: RoleKey;
   roleName: string;
   permissions: PermissionKey[];
@@ -80,9 +78,7 @@ export async function validateSessionToken(db: Db, token: string): Promise<Valid
       id: user.id,
       name: user.name,
       email: user.email,
-      username: user.username,
       department: user.department,
-      jobTitle: user.jobTitle,
       roleKey: user.role.key as RoleKey,
       roleName: user.role.name,
       permissions: user.role.permissions.map((rp) => rp.permission.key as PermissionKey),

@@ -15,7 +15,7 @@ npm ci
 cp .env.example .env        # ajuste APP_URL para o endereço real (https://...)
 npm run db:setup
 npm run build
-npm run admin:criar -- --nome "Nome" --email admin@empresa.com --login admin
+npm run admin:criar -- --nome "Nome" --email admin@empresa.com
 NODE_ENV=production npm start   # porta 3000
 ```
 

@@ -7,8 +7,6 @@ const optionalText = (max: number, label: string) =>
     .max(max, { error: `${label}: no máximo ${max} caracteres.` })
     .transform((v) => (v === "" ? null : v));
 
-export const USERNAME_PATTERN = /^[a-z0-9._-]{3,40}$/;
-
 export const userInputSchema = z.object({
   name: z
     .string()
@@ -21,15 +19,7 @@ export const userInputSchema = z.object({
     .toLowerCase()
     .max(254, { error: "E-mail muito longo." })
     .pipe(z.email({ error: "Informe um e-mail válido." })),
-  username: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .regex(USERNAME_PATTERN, {
-      error: "Use de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado.",
-    }),
   department: optionalText(80, "Área"),
-  jobTitle: optionalText(80, "Cargo"),
   hireDate: z
     .string()
     .trim()
@@ -38,6 +28,7 @@ export const userInputSchema = z.object({
     })
     .transform((v) => (v === "" ? null : new Date(`${v}T00:00:00.000Z`))),
   roleKey: z.enum(["ADMIN", "COLABORADOR"], { error: "Selecione o perfil." }),
+  groupIds: z.array(z.string().min(1).max(40)).max(50).optional().default([]),
 });
 
 export type UserInput = z.output<typeof userInputSchema>;
@@ -64,11 +55,11 @@ export const newPasswordSchema = z
   });
 
 export const loginSchema = z.object({
-  identifier: z
+  email: z
     .string()
     .trim()
     .toLowerCase()
-    .min(1, { error: "Informe seu e-mail ou login." })
+    .min(1, { error: "Informe seu e-mail." })
     .max(254),
   password: z.string().min(1, { error: "Informe sua senha." }).max(256),
 });

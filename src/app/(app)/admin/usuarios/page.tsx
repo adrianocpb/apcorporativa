@@ -60,8 +60,8 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/usua
           <Input
             name="q"
             defaultValue={filters.q}
-            placeholder="Buscar por nome, e-mail ou login"
-            aria-label="Buscar por nome, e-mail ou login"
+            placeholder="Buscar por nome ou e-mail"
+            aria-label="Buscar por nome ou e-mail"
           />
           <Select name="status" defaultValue={filters.status ?? ""} aria-label="Status">
             <option value="">Todos os status</option>
@@ -115,8 +115,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/usua
               <thead>
                 <tr>
                   <Th>Usuário</Th>
-                  <Th className="hidden xl:table-cell">Login</Th>
-                  <Th>Área / cargo</Th>
+                  <Th>Área</Th>
                   <Th>Perfil</Th>
                   <Th>Status</Th>
                   <Th className="hidden lg:table-cell">Último acesso</Th>
@@ -137,13 +136,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/usua
                         </span>
                       </Link>
                     </Td>
-                    <Td className="hidden xl:table-cell">{u.username}</Td>
-                    <Td>
-                      <span className="block">{u.department ?? "—"}</span>
-                      {u.jobTitle && (
-                        <span className="block text-small text-ink-muted">{u.jobTitle}</span>
-                      )}
-                    </Td>
+                    <Td>{u.department ?? "—"}</Td>
                     <Td>{u.role.name}</Td>
                     <Td>
                       <Badge tone={USER_STATUS[u.status].tone}>{USER_STATUS[u.status].label}</Badge>

@@ -156,7 +156,7 @@ export async function getProgressRows(db: Db, actor: SessionUser, f: ReportFilte
   const enrollments = await db.enrollment.findMany({
     where: enrollmentWhere(f),
     include: {
-      user: { select: { id: true, name: true, email: true, department: true, jobTitle: true, hireDate: true, status: true } },
+      user: { select: { id: true, name: true, email: true, department: true, hireDate: true, status: true } },
       track: { select: { id: true, title: true, isOnboarding: true } },
     },
     orderBy: [{ user: { name: "asc" } }, { createdAt: "asc" }],
@@ -213,7 +213,7 @@ export async function getPersonReport(db: Db, actor: SessionUser, userId: string
   guard(actor);
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, email: true, department: true, jobTitle: true, hireDate: true, status: true, createdAt: true, lastLoginAt: true },
+    select: { id: true, name: true, email: true, department: true, hireDate: true, status: true, createdAt: true, lastLoginAt: true },
   });
   if (!user) throw new NotFoundError("Pessoa não encontrada.");
   const [rows, history, level, achievements] = await Promise.all([

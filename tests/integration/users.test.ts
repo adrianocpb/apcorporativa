@@ -20,9 +20,7 @@ setupTestDb();
 const validInput = {
   name: "Ana Pereira",
   email: "Ana.Pereira@Empresa.test",
-  username: "ana.pereira",
   department: "Financeiro",
-  jobTitle: "Analista",
   hireDate: "2026-11-03",
   roleKey: "COLABORADOR",
 };
@@ -76,17 +74,17 @@ describe("cadastro de usuários", () => {
   it("recusa e-mail ou login duplicados com mensagem por campo", async () => {
     const admin = await makeActor();
     await createUser(db, admin, validInput);
-    await expect(
-      createUser(db, admin, { ...validInput, username: "outro.login" }),
-    ).rejects.toMatchObject({ fieldErrors: { email: "Já existe um usuário com este e-mail." } });
+    await expect(createUser(db, admin, { ...validInput, name: "Outra Ana" })).rejects.toMatchObject({
+      fieldErrors: { email: "Já existe um usuário com este e-mail." },
+    });
   });
 
   it("valida campos obrigatórios", async () => {
     const admin = await makeActor();
     await expect(
-      createUser(db, admin, { ...validInput, email: "invalido", username: "A B" }),
+      createUser(db, admin, { ...validInput, email: "invalido", name: "A" }),
     ).rejects.toMatchObject({
-      fieldErrors: { email: expect.any(String), username: expect.any(String) },
+      fieldErrors: { email: expect.any(String), name: expect.any(String) },
     });
   });
 
@@ -113,7 +111,6 @@ describe("ativação e desativação", () => {
       updateUser(db, admin, admin.id, {
         ...validInput,
         email: self.email,
-        username: self.username,
         roleKey: "COLABORADOR",
       }),
     ).rejects.toThrow(/próprio perfil/);
@@ -130,7 +127,6 @@ describe("ativação e desativação", () => {
       updateUser(db, manager, onlyAdmin.id, {
         ...validInput,
         email: onlyAdmin.email,
-        username: onlyAdmin.username,
         roleKey: "COLABORADOR",
       }),
     ).rejects.toThrow(/pelo menos um administrador ativo/);
@@ -176,5 +172,28 @@ describe("integridade do banco", () => {
     await expect(
       db.groupMember.create({ data: { groupId: "inexistente", userId: "inexistente" } }),
     ).rejects.toThrow();
+  });
+});
+
+describe("grupos no cadastro", () => {
+  it("cria o usuário já nos grupos e com as trilhas desses grupos", async () => {
+    const { createGroup } = await import("@/server/services/groups");
+    const { createContent, publishContent } = await import("@/server/services/contents");
+    const { addItems, assignTrack, createTrack, getTrackForEdit, setTrackStatus } = await import("@/server/services/tracks");
+    const admin = await makeActor();
+    const group = await createGroup(db, admin, { name: "Novos — Financeiro", description: "" });
+    const c = await createContent(db, admin, "LINK", { title: "Portal", url: "https://p.test" });
+    await publishContent(db, admin, c.id);
+    const track = await createTrack(db, admin, { title: "Onboarding" });
+    await addItems(db, admin, (await getTrackForEdit(db, admin, track.id)).modules[0].id, [c.id]);
+    await setTrackStatus(db, admin, track.id, "publish");
+    await assignTrack(db, admin, track.id, { groupIds: [group.id] });
+
+    const { user } = await createUser(db, admin, { ...validInput, groupIds: [group.id] });
+    expect(await db.groupMember.count({ where: { userId: user.id, groupId: group.id } })).toBe(1);
+    expect(await db.enrollment.count({ where: { userId: user.id, trackId: track.id } })).toBe(1);
+    await expect(createUser(db, admin, { ...validInput, email: "x@empresa.test", groupIds: ["inexistente"] })).rejects.toThrow(
+      /Grupo inválido/,
+    );
   });
 });

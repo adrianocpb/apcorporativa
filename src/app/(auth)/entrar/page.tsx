@@ -11,7 +11,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/entrar">) 
   return (
     <>
       <h1 className="text-h5 font-medium text-ink">Entrar</h1>
-      <p className="mb-6 text-body text-ink-soft">Use seu e-mail ou login corporativo.</p>
+      <p className="mb-6 text-body text-ink-soft">Use seu e-mail corporativo.</p>
       <LoginForm next={typeof next === "string" ? next : ""} />
     </>
   );

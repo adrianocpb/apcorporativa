@@ -16,12 +16,12 @@ describe("política de senha", () => {
     expect(checkPasswordPolicy("aaaaaaaaaaaa")).toMatch(/comum/);
   });
 
-  it("rejeita senha que contém o login ou o e-mail", () => {
+  it("rejeita senha que contém o e-mail", () => {
     expect(
-      checkPasswordPolicy("maria.silva-2026!", { username: "maria.silva", email: "m@x.com" }),
-    ).toMatch(/login ou e-mail/);
+      checkPasswordPolicy("maria.silva-2026!", { email: "maria.silva@empresa.com" }),
+    ).toMatch(/e-mail/);
     expect(checkPasswordPolicy("xx-joaosouza-xx", { email: "joaosouza@empresa.com" })).toMatch(
-      /login ou e-mail/,
+      /e-mail/,
     );
   });
 });

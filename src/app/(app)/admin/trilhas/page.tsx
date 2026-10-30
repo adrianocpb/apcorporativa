@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { IconPlus, IconRoute } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronUp, IconPlus, IconRoute } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
 import { PERMISSIONS } from "@/server/auth/permissions";
@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Table, Td, Th, Tr } from "@/components/ui/table";
 import { formatDate } from "@/lib/format";
 import { TRACK_STATUS } from "@/lib/labels";
+import { moveTrackAction } from "./actions";
 
 export const metadata: Metadata = { title: "Trilhas" };
 
@@ -22,7 +23,7 @@ export default async function TracksPage() {
     <>
       <PageHeader
         title="Trilhas"
-        description="Sequências de aprendizagem com etapas, conteúdos e acompanhamento do progresso."
+        description="A ordem desta lista é a ordem em que as trilhas aparecem para o colaborador (concluídas vão para o fim)."
         actions={
           <ButtonLink href="/admin/trilhas/nova" icon={<IconPlus />}>
             Nova trilha
@@ -45,6 +46,7 @@ export default async function TracksPage() {
           <Table>
             <thead>
               <tr>
+                <Th className="w-[84px]">Ordem</Th>
                 <Th>Trilha</Th>
                 <Th>Status</Th>
                 <Th className="hidden md:table-cell">Conteúdos</Th>
@@ -53,8 +55,32 @@ export default async function TracksPage() {
               </tr>
             </thead>
             <tbody>
-              {tracks.map((t) => (
+              {tracks.map((t, i) => (
                 <Tr key={t.id}>
+                  <Td>
+                    <div className="flex">
+                      <form action={moveTrackAction.bind(null, t.id, "up")}>
+                        <button
+                          type="submit"
+                          disabled={i === 0}
+                          className="flex size-[30px] items-center justify-center rounded-md text-ink-soft hover:bg-surface-hover disabled:opacity-30"
+                          aria-label={`Mover ${t.title} para cima`}
+                        >
+                          <IconChevronUp className="size-4" />
+                        </button>
+                      </form>
+                      <form action={moveTrackAction.bind(null, t.id, "down")}>
+                        <button
+                          type="submit"
+                          disabled={i === tracks.length - 1}
+                          className="flex size-[30px] items-center justify-center rounded-md text-ink-soft hover:bg-surface-hover disabled:opacity-30"
+                          aria-label={`Mover ${t.title} para baixo`}
+                        >
+                          <IconChevronDown className="size-4" />
+                        </button>
+                      </form>
+                    </div>
+                  </Td>
                   <Td>
                     <Link href={`/admin/trilhas/${t.id}`} className="font-medium text-ink hover:underline">
                       {t.title}

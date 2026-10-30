@@ -15,13 +15,13 @@ export default async function ResetPasswordPage({ params }: PageProps<"/redefini
     <>
       <h1 className="text-h5 font-medium text-ink">Redefinir senha</h1>
       <p className="mb-6 text-body text-ink-soft">
-        Escolha uma nova senha para <strong className="font-medium text-ink">{record.user.username}</strong>.
+        Escolha uma nova senha para <strong className="font-medium text-ink">{record.user.email}</strong>.
         As sessões abertas em outros dispositivos serão encerradas.
       </p>
       <NewPasswordForm
         action={resetPasswordAction.bind(null, token)}
         submitLabel="Salvar nova senha"
-        username={record.user.username}
+        email={record.user.email}
       />
     </>
   );

@@ -252,6 +252,7 @@ export async function getMyTracks(db: Db, user: SessionUser) {
           title: true,
           description: true,
           isOnboarding: true,
+          displayOrder: true,
           coverFileId: true,
           status: true,
           category: { select: { name: true } },
@@ -276,20 +277,25 @@ export async function getMyTracks(db: Db, user: SessionUser) {
     });
   }
 
-  const inProgress = tracks.filter(
-    (t) => !t.state.completed && (t.state.percent > 0 || t.enrollment.status === "IN_PROGRESS"),
-  );
-  const notStarted = tracks.filter((t) => !t.state.completed && !inProgress.includes(t));
-  const completed = tracks.filter((t) => t.state.completed);
-  // Próxima ação: retomar a trilha mais recente; senão começar (onboarding primeiro).
-  const next =
-    inProgress[0] ??
-    [...notStarted].sort((a, b) => Number(b.track.isOnboarding) - Number(a.track.isOnboarding))[0] ??
-    null;
+  // A consulta vem pela atividade mais recente; as listas seguem a ordem definida pelo administrador.
+  type Entry = { track: { displayOrder: number; title: string }; state: TrackComputation; enrollment: { status: string } };
+  const byDisplayOrder = (a: Entry, b: Entry) =>
+    a.track.displayOrder - b.track.displayOrder || a.track.title.localeCompare(b.track.title, "pt-BR");
+  const isStarted = (t: Entry) =>
+    !t.state.completed && (t.state.percent > 0 || t.enrollment.status === "IN_PROGRESS");
+  const inProgress = tracks.filter(isStarted).sort(byDisplayOrder);
+  const notStarted = tracks.filter((t) => !t.state.completed && !isStarted(t)).sort(byDisplayOrder);
+  const completed = tracks.filter((t) => t.state.completed).sort(byDisplayOrder);
+  // Grade do painel: trilhas pendentes na ordem do administrador; concluídas ficam à parte, no fim.
+  const active = tracks.filter((t) => !t.state.completed).sort(byDisplayOrder);
+  // Cartão principal ("continue de onde parou"): a trilha com atividade mais recente;
+  // sem nenhuma iniciada, a primeira pendente na ordem do administrador.
+  const next = tracks.find(isStarted) ?? notStarted[0] ?? null;
   const required = tracks.reduce((s, t) => s + t.state.requiredCount, 0);
   const done = tracks.reduce((s, t) => s + (t.state.completed ? t.state.requiredCount : t.state.completedRequiredCount), 0);
   return {
     tracks,
+    active,
     inProgress,
     notStarted,
     completed,

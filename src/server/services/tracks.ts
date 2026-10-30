@@ -45,7 +45,7 @@ export async function listTracks(db: Db, actor: SessionUser, filters: { status?:
   guard(actor);
   const tracks = await db.track.findMany({
     where: filters.status ? { status: filters.status } : {},
-    orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
+    orderBy: [{ displayOrder: "asc" }, { title: "asc" }],
     include: {
       category: { select: { name: true } },
       modules: { select: { _count: { select: { items: true } } } },
@@ -125,10 +125,13 @@ export async function createTrack(db: Db, actor: SessionUser, raw: unknown, meta
   guard(actor);
   const input = parseInput(trackInputSchema, raw);
   await validRefs(db, input);
+  const last = await db.track.findFirst({ orderBy: { displayOrder: "desc" }, select: { displayOrder: true } });
   return db.$transaction(async (tx) => {
     const track = await tx.track.create({
       data: {
         ...input,
+        // Nova trilha entra no fim da ordem de exibição.
+        displayOrder: (last?.displayOrder ?? -1) + 1,
         createdById: actor.id,
         // Toda trilha nasce com uma etapa para começar a montar.
         modules: { create: { title: "Etapa 1", position: 0 } },
@@ -453,4 +456,39 @@ export async function listAssignTargets(db: Db, actor: SessionUser, trackId: str
     }),
   ]);
   return { users, groups };
+}
+
+/** Ordem das trilhas na grade do colaborador: troca a posição com a vizinha. */
+export async function moveTrack(
+  db: Db,
+  actor: SessionUser,
+  trackId: string,
+  direction: "up" | "down",
+  meta: RequestMeta = {},
+) {
+  guard(actor);
+  const tracks = await db.track.findMany({
+    orderBy: [{ displayOrder: "asc" }, { title: "asc" }],
+    select: { id: true, title: true },
+  });
+  const index = tracks.findIndex((t) => t.id === trackId);
+  if (index < 0) throw new NotFoundError("Trilha não encontrada.");
+  const target = index + (direction === "up" ? -1 : 1);
+  if (target < 0 || target >= tracks.length) return;
+  const reordered = [...tracks];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+  await db.$transaction(async (tx) => {
+    // Renumera todas para corrigir posições repetidas.
+    for (const [displayOrder, t] of reordered.entries()) {
+      await tx.track.update({ where: { id: t.id }, data: { displayOrder } });
+    }
+    await auditTrack(
+      tx,
+      actor,
+      trackId,
+      "trilha.reordenada",
+      { titulo: tracks[index].title, direcao: direction === "up" ? "acima" : "abaixo" },
+      meta,
+    );
+  });
 }

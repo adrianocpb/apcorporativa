@@ -63,8 +63,6 @@ export default async function PersonReportPage({ params }: PageProps<"/admin/rel
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-body">
                 <dt className="text-small text-ink-muted">Área</dt>
                 <dd className="text-ink">{user.department ?? "—"}</dd>
-                <dt className="text-small text-ink-muted">Cargo</dt>
-                <dd className="text-ink">{user.jobTitle ?? "—"}</dd>
                 <dt className="text-small text-ink-muted">Entrada</dt>
                 <dd className="text-ink">{formatDateOnly(user.hireDate)}</dd>
                 <dt className="text-small text-ink-muted">Último acesso</dt>

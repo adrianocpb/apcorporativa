@@ -33,7 +33,6 @@ export async function listUsers(db: Db, actor: SessionUser, filters: UserFilters
           OR: [
             { name: { contains: q } },
             { email: { contains: q.toLowerCase() } },
-            { username: { contains: q.toLowerCase() } },
           ],
         }
       : {}),
@@ -49,9 +48,7 @@ export async function listUsers(db: Db, actor: SessionUser, filters: UserFilters
         id: true,
         name: true,
         email: true,
-        username: true,
         department: true,
-        jobTitle: true,
         status: true,
         createdAt: true,
         lastLoginAt: true,
@@ -81,9 +78,7 @@ export async function getUser(db: Db, actor: SessionUser, id: string) {
       id: true,
       name: true,
       email: true,
-      username: true,
       department: true,
-      jobTitle: true,
       hireDate: true,
       status: true,
       createdAt: true,
@@ -100,18 +95,12 @@ export async function getUser(db: Db, actor: SessionUser, id: string) {
 
 async function assertUnique(db: Db, input: UserInput, ignoreId?: string) {
   const conflict = await db.user.findFirst({
-    where: {
-      OR: [{ email: input.email }, { username: input.username }],
-      ...(ignoreId ? { NOT: { id: ignoreId } } : {}),
-    },
-    select: { email: true, username: true },
+    where: { email: input.email, ...(ignoreId ? { NOT: { id: ignoreId } } : {}) },
+    select: { id: true },
   });
-  if (!conflict) return;
-  const fieldErrors: Record<string, string> = {};
-  if (conflict.email === input.email) fieldErrors.email = "Já existe um usuário com este e-mail.";
-  if (conflict.username === input.username)
-    fieldErrors.username = "Já existe um usuário com este login.";
-  throw new AppError("Verifique os campos destacados.", fieldErrors);
+  if (conflict) {
+    throw new AppError("Verifique os campos destacados.", { email: "Já existe um usuário com este e-mail." });
+  }
 }
 
 async function roleIdByKey(db: Db | Prisma.TransactionClient, key: string) {
@@ -136,21 +125,28 @@ export async function createUser(
   const input = parseInput(userInputSchema, rawInput);
   await assertUnique(db, input);
   const roleId = await roleIdByKey(db, input.roleKey);
+  const groups = input.groupIds.length
+    ? await db.group.findMany({ where: { id: { in: input.groupIds } }, select: { id: true, name: true } })
+    : [];
+  if (groups.length !== new Set(input.groupIds).size) throw new AppError("Grupo inválido.");
 
   return db.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
         name: input.name,
         email: input.email,
-        username: input.username,
         department: input.department,
-        jobTitle: input.jobTitle,
         hireDate: input.hireDate,
         roleId,
         status: "INVITED",
         createdById: actor.id,
       },
     });
+    if (groups.length) {
+      await tx.groupMember.createMany({ data: groups.map((g) => ({ groupId: g.id, userId: user.id })) });
+      // Já recebe as trilhas atribuídas aos grupos escolhidos.
+      await syncEnrollmentsForGroups(tx, groups.map((g) => g.id));
+    }
     const invite = await issueAuthToken(tx, {
       userId: user.id,
       type: "INVITE",
@@ -161,7 +157,7 @@ export async function createUser(
       action: "usuario.criado",
       entityType: "usuario",
       entityId: user.id,
-      details: { nome: user.name, email: user.email, login: user.username, perfil: input.roleKey },
+      details: { nome: user.name, email: user.email, perfil: input.roleKey, grupos: groups.map((g) => g.name) },
       ip: meta.ip,
     });
     return { user, invite };
@@ -200,18 +196,14 @@ export async function updateUser(
   const before = {
     nome: current.name,
     email: current.email,
-    login: current.username,
     area: current.department,
-    cargo: current.jobTitle,
     dataEntrada: current.hireDate?.toISOString().slice(0, 10) ?? null,
     perfil: current.role.key,
   };
   const after = {
     nome: input.name,
     email: input.email,
-    login: input.username,
     area: input.department,
-    cargo: input.jobTitle,
     dataEntrada: input.hireDate?.toISOString().slice(0, 10) ?? null,
     perfil: input.roleKey,
   };
@@ -226,9 +218,7 @@ export async function updateUser(
       data: {
         name: input.name,
         email: input.email,
-        username: input.username,
         department: input.department,
-        jobTitle: input.jobTitle,
         hireDate: input.hireDate,
         roleId,
       },
