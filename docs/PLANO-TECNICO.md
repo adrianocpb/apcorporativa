@@ -165,7 +165,7 @@ Convenções: chaves `id` em `cuid2`, `createdAt`/`updatedAt` em todas as tabela
 
 | Entidade | Campos principais | Observações |
 | --- | --- | --- |
-| `Level` | número, nome, `minPoints` | Seed: Explorador (0), Aprendiz, Praticante, Especialista, Multiplicador de Conhecimento. |
+| `Level` | número, nome, `minPoints` | Seed: Explorador (0), Aprendiz, Praticante, Referência, Multiplicador de Conhecimento. |
 | `PointRule` | `event` (CONTEUDO_VIDEO_CONCLUIDO, MANUAL_OBRIGATORIO_CONCLUIDO, ETAPA_CONCLUIDA, TRILHA_CONCLUIDA, CONQUISTA_OBTIDA), `points`, `active` | Valores configuráveis. |
 | `PointTransaction` | `userId`, `ruleId`, `event`, `points`, `sourceType`, `sourceId`, `createdAt`, `reason` | **Livro-razão somente inserção** com `UNIQUE(userId, event, sourceType, sourceId)` → impossível pontuar duas vezes o mesmo fato, mesmo com requisições concorrentes. Ajustes manuais = nova linha com motivo, auditada. |
 | `Achievement` | chave, nome, descrição, ícone, `criteria` (JSON tipado: `{tipo: 'CONTEUDOS_CONCLUIDOS', minimo: 5}`, `{tipo: 'TRILHA_CONCLUIDA', trackId}`, `{tipo: 'ONBOARDING_CONCLUIDO'}`, `{tipo: 'CATEGORIA_CONCLUIDA', categoryId}`), `active` | |

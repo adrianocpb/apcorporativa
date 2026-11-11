@@ -53,7 +53,7 @@
 
 - [x] Pontos por concluir vídeo, leitura (PDF/manual/FAQ), imagem ou link, finalizar etapa e finalizar trilha — valores e ativação configuráveis
 - [x] Livro-razão de pontos somente inserção, com origem, data, quantidade e evento; sem pontos repetidos ao rever ou reconcluir (restrição única no banco, testada com conclusões simultâneas)
-- [x] Níveis configuráveis por pontos (padrão: Explorador, Aprendiz, Praticante, Especialista, Multiplicador de Conhecimento)
+- [x] Níveis configuráveis por pontos (padrão: Explorador, Aprendiz, Praticante, Referência, Multiplicador de Conhecimento)
 - [x] Painel com nível, pontos, pontos para o próximo nível e barra de progresso
 - [x] Conquistas automáticas por critério (quantidade de conteúdos, quantidade de trilhas, onboarding concluído, trilha específica), com bônus opcional
 - [x] Página de conquistas e histórico de pontos do colaborador

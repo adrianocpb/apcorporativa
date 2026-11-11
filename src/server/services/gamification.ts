@@ -24,7 +24,7 @@ const DEFAULT_LEVELS = [
   { name: "Explorador", minPoints: 0 },
   { name: "Aprendiz", minPoints: 100 },
   { name: "Praticante", minPoints: 300 },
-  { name: "Especialista", minPoints: 600 },
+  { name: "Referência", minPoints: 600 },
   { name: "Multiplicador de Conhecimento", minPoints: 1000 },
 ];
 
