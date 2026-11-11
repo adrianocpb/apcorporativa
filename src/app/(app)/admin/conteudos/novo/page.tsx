@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ContentTypeIcon } from "@/components/content/content-type-icon";
 import { CONTENT_TYPE } from "@/lib/labels";
 import { CONTENT_TYPES } from "@/lib/validation/contents";
+import { EMPTY_QUIZ } from "@/lib/quiz";
 import { ContentForm } from "../content-form";
 import { createContentAction } from "../actions";
 
@@ -70,6 +71,7 @@ export default async function NewContentPage({ searchParams }: PageProps<"/admin
               durationSeconds: null,
               url: "",
               body: null,
+              quiz: EMPTY_QUIZ,
             }}
           />
         </CardBody>

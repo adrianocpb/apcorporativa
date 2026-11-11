@@ -8,6 +8,8 @@ import { Alert } from "@/components/ui/feedback";
 import { toast } from "@/components/ui/toaster";
 import { FileUploadField, type CurrentFile } from "@/components/content/file-upload-field";
 import { RichTextEditor } from "@/components/content/rich-text-editor";
+import { QuizEditor } from "@/components/content/quiz-editor";
+import type { QuizDefinition } from "@/lib/quiz";
 import type { RichNode } from "@/lib/rich-text";
 import type { ActionState } from "@/server/actions";
 
@@ -20,6 +22,7 @@ export type ContentFormValues = {
   durationSeconds: number | null;
   url: string;
   body: RichNode | null;
+  quiz: QuizDefinition;
 };
 
 const FILE_KIND = { VIDEO: "VIDEO", PDF: "PDF", IMAGE: "IMAGE" } as const;
@@ -69,13 +72,15 @@ export function ContentForm({
 
       {!isFaq && (
         <Field
-          label={type === "IMAGE" ? "Descrição da imagem" : "Descrição"}
+          label={type === "IMAGE" ? "Descrição da imagem" : type === "QUIZ" ? "Orientações" : "Descrição"}
           name="description"
           error={err.description}
           hint={
             type === "IMAGE"
               ? "Descreva o que a imagem mostra (usada por leitores de tela)."
-              : "Resumo exibido nas listas e na busca."
+              : type === "QUIZ"
+                ? "Aparece antes das perguntas. Ex.: sobre o que é o quiz e o que revisar antes."
+                : "Resumo exibido nas listas e na busca."
           }
         >
           {(p) => <Textarea {...p} defaultValue={initial.description} rows={3} maxLength={1000} />}
@@ -112,6 +117,8 @@ export function ContentForm({
         />
       )}
 
+      {type === "QUIZ" && <QuizEditor initial={initial.quiz} error={err.quiz} />}
+
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Categoria" name="categoryId" error={err.categoryId}>
           {(p) => (
@@ -125,6 +132,7 @@ export function ContentForm({
             </Select>
           )}
         </Field>
+        {type !== "QUIZ" && (
         <label className="flex items-start gap-3 self-end rounded-md border border-line px-3 py-2.5">
           <Checkbox name="inLibrary" defaultChecked={initial.inLibrary} className="mt-0.5" />
           <span>
@@ -134,6 +142,7 @@ export function ContentForm({
             </span>
           </span>
         </label>
+        )}
       </div>
 
       {hasPublished && (

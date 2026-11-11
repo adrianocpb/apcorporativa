@@ -11,6 +11,7 @@ import {
   createContent,
   deleteUnpublishedContent,
   discardDraft,
+  duplicateContent,
   publishContent,
   saveDraft,
   setContentArchived,
@@ -83,6 +84,21 @@ export async function discardDraftAction(id: string, _prev: ActionState) {
     await discardDraft(db, actor, id, await getRequestMeta());
     revalidatePath("/admin", "layout");
   });
+}
+
+export async function duplicateContentAction(id: string, _prev: ActionState) {
+  let copyId = "";
+  const state = await runAction(async () => {
+    const actor = await requireUser();
+    const copy = await duplicateContent(db, actor, id, await getRequestMeta());
+    copyId = copy.id;
+    await setFlash("Cópia criada como rascunho. Ajuste o que precisar e publique.");
+  });
+  if (state.ok) {
+    revalidatePath("/admin", "layout");
+    redirect(`/admin/conteudos/${copyId}`);
+  }
+  return state;
 }
 
 export async function deleteContentAction(id: string, _prev: ActionState) {

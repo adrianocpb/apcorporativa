@@ -32,6 +32,7 @@ const DEFAULT_RULES: { event: PointEvent; points: number }[] = [
   { event: "CONTENT_VIDEO", points: 10 },
   { event: "CONTENT_READING", points: 10 },
   { event: "CONTENT_OTHER", points: 5 },
+  { event: "CONTENT_QUIZ", points: 15 },
   { event: "MODULE_COMPLETED", points: 20 },
   { event: "TRACK_COMPLETED", points: 50 },
 ];
@@ -128,6 +129,7 @@ const CONTENT_EVENT: Record<string, PointEvent> = {
   FAQ: "CONTENT_READING",
   IMAGE: "CONTENT_OTHER",
   LINK: "CONTENT_OTHER",
+  QUIZ: "CONTENT_QUIZ",
 };
 
 export type ProgressReward = {

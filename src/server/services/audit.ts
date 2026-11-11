@@ -47,6 +47,8 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "grupo.membro_removido": "Membro removido do grupo",
   "sistema.admin_inicial": "Administrador inicial criado",
   "conteudo.criado": "Conteúdo criado",
+  "conteudo.duplicado": "Conteúdo duplicado",
+  "quiz.tentativas_liberadas": "Novas tentativas de quiz liberadas",
   "conteudo.rascunho_salvo": "Rascunho de conteúdo salvo",
   "conteudo.publicado": "Conteúdo publicado",
   "conteudo.arquivado": "Conteúdo arquivado",

@@ -38,7 +38,7 @@ export default async function PreviewPage({ params, searchParams }: PageProps<"/
       </Alert>
       <Card className="max-w-4xl">
         <CardBody>
-          <ContentViewer type={content.type} version={version} />
+          <ContentViewer type={content.type} version={version} showQuizKey />
         </CardBody>
       </Card>
     </>

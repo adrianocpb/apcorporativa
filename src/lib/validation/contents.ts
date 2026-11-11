@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CONTENT_TYPES = ["VIDEO", "PDF", "IMAGE", "ARTICLE", "FAQ", "LINK"] as const;
+export const CONTENT_TYPES = ["VIDEO", "PDF", "IMAGE", "ARTICLE", "FAQ", "LINK", "QUIZ"] as const;
 export type ContentTypeKey = (typeof CONTENT_TYPES)[number];
 
 // Campo ausente conta como vazio (formulários e chamadas diretas aos serviços).
@@ -53,6 +53,12 @@ export const contentInputSchema = z.object({
   body: z
     .string()
     .max(500_000, { error: "O texto ficou grande demais. Divida em mais de um conteúdo." })
+    .optional()
+    .default(""),
+  /** Quiz em JSON (editor de perguntas). */
+  quiz: z
+    .string()
+    .max(400_000, { error: "O quiz ficou grande demais. Divida em mais de um quiz." })
     .optional()
     .default(""),
 });

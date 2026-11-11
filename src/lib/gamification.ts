@@ -90,6 +90,7 @@ export const POINT_EVENT_LABEL: Record<string, string> = {
   CONTENT_VIDEO: "Concluir um vídeo",
   CONTENT_READING: "Concluir uma leitura (PDF, manual ou pergunta frequente)",
   CONTENT_OTHER: "Concluir imagem ou link",
+  CONTENT_QUIZ: "Ser aprovado em um quiz (só na primeira aprovação)",
   MODULE_COMPLETED: "Finalizar uma etapa",
   TRACK_COMPLETED: "Finalizar uma trilha",
   ACHIEVEMENT: "Conquista",

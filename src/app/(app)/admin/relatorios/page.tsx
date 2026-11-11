@@ -46,6 +46,7 @@ const METHOD: Record<string, string> = {
   VIDEO_WATCHED: "Vídeo assistido",
   CONFIRMED: "Leitura confirmada",
   VIEWED: "Aberto",
+  QUIZ_PASSED: "Aprovado no quiz",
 };
 
 const days = (d: number | null) =>

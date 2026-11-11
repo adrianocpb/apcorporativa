@@ -34,7 +34,7 @@ const TABS = [
   { key: "historico", label: "Histórico de pontos" },
 ] as const;
 
-const EDITABLE_EVENTS = ["CONTENT_VIDEO", "CONTENT_READING", "CONTENT_OTHER", "MODULE_COMPLETED", "TRACK_COMPLETED"];
+const EDITABLE_EVENTS = ["CONTENT_VIDEO", "CONTENT_READING", "CONTENT_OTHER", "CONTENT_QUIZ", "MODULE_COMPLETED", "TRACK_COMPLETED"];
 
 export default async function GamificationPage({ searchParams }: PageProps<"/admin/gamificacao">) {
   const actor = await requirePermission(PERMISSIONS.GAMIFICACAO_CONFIGURAR);

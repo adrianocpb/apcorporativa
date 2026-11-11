@@ -21,6 +21,7 @@ const METHOD: Record<string, string> = {
   VIDEO_WATCHED: "Vídeo assistido",
   CONFIRMED: "Leitura confirmada",
   VIEWED: "Aberto",
+  QUIZ_PASSED: "Aprovado no quiz",
 };
 const round = (n: number | null) => (n === null ? null : Math.round(n * 10) / 10);
 

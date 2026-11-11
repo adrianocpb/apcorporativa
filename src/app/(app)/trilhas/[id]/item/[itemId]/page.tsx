@@ -5,6 +5,8 @@ import { db } from "@/server/db";
 import { requireUser } from "@/server/auth/current-user";
 import { NotFoundError } from "@/server/errors";
 import { getItemForLearner, getTrackForLearner, LockedError } from "@/server/services/learning";
+import { getQuizForLearner } from "@/server/services/quiz";
+import { QuizPlayer } from "@/components/learning/quiz-player";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { EmptyState, ProgressBar } from "@/components/ui/feedback";
@@ -57,6 +59,7 @@ export default async function LearnerItemPage({ params }: PageProps<"/trilhas/[i
     : { href: `/trilhas/${id}`, label: "Voltar à trilha" };
   const ranges = (progress?.watchedRanges as Range[] | null) ?? [];
   const duration = progress?.durationSeconds ?? version.file?.durationSeconds ?? version.durationSeconds ?? 0;
+  const quiz = item.content.type === "QUIZ" ? await getQuizForLearner(db, user, version.id, version.quiz) : null;
 
   return (
     <>
@@ -71,7 +74,10 @@ export default async function LearnerItemPage({ params }: PageProps<"/trilhas/[i
             <CardBody className="flex flex-col gap-5">
               <ContentViewer
                 type={item.content.type}
-                version={version}
+                version={{ ...version, quiz: undefined }}
+                quizElement={
+                  quiz ? <QuizPlayer key={`${version.id}-${quiz.passed}`} trackId={id} itemId={itemId} quiz={quiz} /> : undefined
+                }
                 videoElement={
                   version.file && item.content.type === "VIDEO" ? (
                     <TrackedVideoPlayer

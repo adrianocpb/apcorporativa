@@ -36,7 +36,8 @@ ContentVersion N─M StoredFile (imagens no texto, via ContentVersionAsset)
 | --- | --- | --- |
 | `Category` | Categoria ou subcategoria | Máximo de dois níveis. Nome único por nível. Arquivar não afeta conteúdos (só some dos seletores); a principal só é arquivada sem subcategorias ativas. |
 | `Content` | Conteúdo reutilizável (trilhas e biblioteca) | `type`: VIDEO, PDF, IMAGE, ARTICLE, FAQ, LINK. `status`: DRAFT (nunca publicado), PUBLISHED, ARCHIVED. `inLibrary` controla a visibilidade na Central. `title` espelha a versão vigente. |
-| `ContentVersion` | Versão do conteúdo | `number` sequencial por conteúdo. DRAFT → PUBLISHED → SUPERSEDED. Versões publicadas não são alteradas. `requiresRecompletion` marca mudança relevante (usada na Fase 3). |
+| `ContentVersion` | Versão do conteúdo | `number` sequencial por conteúdo. DRAFT → PUBLISHED → SUPERSEDED. Versões publicadas não são alteradas. `requiresRecompletion` marca mudança relevante (usada na Fase 3). `quiz` (JSON) guarda perguntas, alternativas, gabarito e regras do quiz (formato em `src/lib/quiz.ts`). |
+| `QuizAttempt` | Tentativa de quiz | **Somente inserção.** Respostas, acerto por pergunta, nota e aprovação, por versão. "Liberar novas tentativas" só marca `voidedAt` (não apaga). |
 | `StoredFile` | Metadados do arquivo | `storageKey` interno e único, nome original limpo, tipo detectado pelo conteúdo, tamanho, SHA-256. Bytes no armazenamento, nunca no banco. Não pode ser apagado enquanto uma versão o referenciar. |
 | `ContentVersionAsset` | Imagens incorporadas em artigos | Libera o acesso às imagens de artigos publicados. |
 

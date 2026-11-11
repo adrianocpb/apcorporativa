@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { IconDownload } from "@tabler/icons-react";
+import { IconDownload, IconRefresh } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
 import { PERMISSIONS } from "@/server/auth/permissions";
 import { NotFoundError } from "@/server/errors";
 import { getPersonReport } from "@/server/services/reports";
+import { getQuizAttemptsForUser } from "@/server/services/quiz";
+import { ConfirmActionButton } from "@/components/forms/action-buttons";
+import { releaseQuizAttemptsAction } from "../../actions";
 import { buttonClasses } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar, Badge, EmptyState, ProgressBar } from "@/components/ui/feedback";
@@ -22,6 +25,7 @@ const METHOD: Record<string, string> = {
   VIDEO_WATCHED: "Vídeo assistido",
   CONFIRMED: "Leitura confirmada",
   VIEWED: "Aberto",
+  QUIZ_PASSED: "Aprovado no quiz",
 };
 
 export default async function PersonReportPage({ params }: PageProps<"/admin/relatorios/pessoas/[id]">) {
@@ -35,6 +39,7 @@ export default async function PersonReportPage({ params }: PageProps<"/admin/rel
     throw error;
   }
   const { user, rows, history, level, achievements } = data;
+  const quizzes = await getQuizAttemptsForUser(db, actor, id);
   const status = USER_STATUS[user.status];
 
   return (
@@ -131,6 +136,59 @@ export default async function PersonReportPage({ params }: PageProps<"/admin/rel
               </div>
             )}
           </Card>
+          {quizzes.length > 0 && (
+            <Card>
+              <CardHeader title="Quizzes" subtitle="Melhor nota e tentativas por quiz" />
+              <div className="mt-4">
+                <Table>
+                  <thead>
+                    <tr>
+                      <Th>Quiz</Th>
+                      <Th>Melhor nota</Th>
+                      <Th className="hidden md:table-cell">Tentativas</Th>
+                      <Th>Situação</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {quizzes.map((q) => (
+                      <Tr key={`${q.contentId}-${q.version}`}>
+                        <Td>
+                          {q.title}
+                          <span className="block text-small text-ink-muted">
+                            versão {q.version}
+                            {!q.current && " (anterior)"} · última em {formatDateTime(q.lastAt)}
+                          </span>
+                        </Td>
+                        <Td>
+                          {q.bestScore}%<span className="block text-small text-ink-muted">mínima {q.passPercent}%</span>
+                        </Td>
+                        <Td className="hidden md:table-cell">{q.attempts}</Td>
+                        <Td>
+                          <div className="flex flex-col items-start gap-2">
+                            <Badge tone={q.passed ? "success" : q.blocked ? "danger" : "warning"}>
+                              {q.passed ? "Aprovado" : q.blocked ? "Tentativas esgotadas" : "Ainda não aprovado"}
+                            </Badge>
+                            {!q.passed && q.current && (
+                              <ConfirmActionButton
+                                action={releaseQuizAttemptsAction.bind(null, user.id, q.contentId)}
+                                label="Liberar novas tentativas"
+                                icon={<IconRefresh />}
+                                size="sm"
+                                title="Liberar novas tentativas?"
+                                description={`As tentativas de ${user.name} neste quiz deixam de contar no limite (continuam no histórico de auditoria).`}
+                                confirmLabel="Liberar"
+                                successMessage="Tentativas liberadas."
+                              />
+                            )}
+                          </div>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            </Card>
+          )}
           <Card>
             <CardHeader title="Histórico de aprendizagem" subtitle="Conclusões registradas (permanentes)" />
             {history.length === 0 ? (

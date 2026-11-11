@@ -33,6 +33,7 @@ export function minDwellSeconds(type: string, trackMinRead: number) {
 export function defaultCompletionRule(type: string): CompletionRule {
   if (type === "VIDEO") return "WATCH";
   if (type === "IMAGE" || type === "LINK") return "VIEW";
+  if (type === "QUIZ") return "QUIZ";
   return "CONFIRM";
 }
 
@@ -369,7 +370,7 @@ export type CompletionEvents = {
   reward?: ProgressReward;
 };
 
-async function loadAvailableItem(db: DbOrTx, userId: string, trackId: string, itemId: string) {
+export async function loadAvailableItem(db: DbOrTx, userId: string, trackId: string, itemId: string) {
   await requireEnrollment(db, userId, trackId);
   const { structure, result } = await computeTrackForUsers(db, trackId, [userId]);
   const state = result.get(userId)!;
@@ -411,7 +412,7 @@ export async function openItem(db: Db, user: SessionUser, trackId: string, itemI
  * Conclui um conteúdo de forma idempotente: a restrição única (pessoa, versão) impede
  * registros repetidos. Atualiza as matrículas de todas as trilhas que usam o conteúdo.
  */
-async function completeItem(
+export async function completeItem(
   db: Db,
   userId: string,
   trackId: string,
@@ -484,6 +485,9 @@ export async function confirmCompletion(db: Db, user: SessionUser, trackId: stri
   const { structure, item, versionId } = await loadAvailableItem(db, user.id, trackId, itemId);
   if (item.completionRule === "WATCH") {
     throw new AppError("Este vídeo é concluído automaticamente ao ser assistido.");
+  }
+  if (item.completionRule === "QUIZ" || item.content.type === "QUIZ") {
+    throw new AppError("O quiz é concluído ao ser aprovado.");
   }
   const progress = await db.contentProgress.findUnique({
     where: { userId_contentVersionId: { userId: user.id, contentVersionId: versionId } },

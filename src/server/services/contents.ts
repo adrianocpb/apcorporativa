@@ -5,6 +5,7 @@ import { PERMISSIONS } from "@/server/auth/permissions";
 import type { RequestMeta, SessionUser } from "@/server/auth/sessions";
 import { CONTENT_TYPES, contentInputSchema, publishOptionsSchema, type ContentInput } from "@/lib/validation/contents";
 import { renderRichText, type RichNode } from "@/lib/rich-text";
+import { cloneQuiz, quizPublishProblem, quizSchema, readQuiz } from "@/lib/quiz";
 import { parseInput } from "@/server/validation";
 import { audit } from "@/server/services/audit";
 import { assertPermission } from "@/server/services/guard";
@@ -106,6 +107,7 @@ type VersionData = {
   body: Prisma.InputJsonValue | undefined;
   bodyHtml: string | null;
   bodyText: string | null;
+  quiz: Prisma.InputJsonValue | undefined;
   imageFileIds: string[];
 };
 
@@ -120,6 +122,7 @@ async function buildVersionData(db: Db, type: ContentType, input: ContentInput):
     body: undefined,
     bodyHtml: null,
     bodyText: null,
+    quiz: undefined,
     imageFileIds: [],
   };
 
@@ -167,10 +170,26 @@ async function buildVersionData(db: Db, type: ContentType, input: ContentInput):
     data.bodyText = rendered.text;
     data.imageFileIds = existing.map((f) => f.id);
   }
+
+  if (type === "QUIZ" && input.quiz) {
+    let raw: unknown;
+    try {
+      raw = JSON.parse(input.quiz);
+    } catch {
+      throw new AppError("Não foi possível ler as perguntas do quiz. Recarregue a página.");
+    }
+    const parsed = quizSchema.safeParse(raw);
+    if (!parsed.success) throw new AppError(parsed.error.issues[0]?.message ?? "Quiz inválido.", { quiz: parsed.error.issues[0]?.message ?? "Quiz inválido." });
+    data.quiz = parsed.data as Prisma.InputJsonValue;
+  }
   return data;
 }
 
-function missingForPublish(type: ContentType, v: { fileId: string | null; url: string | null; bodyText: string | null; bodyHtml: string | null }) {
+function missingForPublish(
+  type: ContentType,
+  v: { fileId: string | null; url: string | null; bodyText: string | null; bodyHtml: string | null; quiz: Prisma.JsonValue | null },
+) {
+  if (type === "QUIZ") return quizPublishProblem(readQuiz(v.quiz));
   if (type in FILE_TYPES && !v.fileId) return "Envie o arquivo antes de publicar.";
   if (type === "LINK" && !v.url) return "Informe o endereço do link antes de publicar.";
   if (RICH_TYPES.includes(type) && !v.bodyText && !v.bodyHtml?.includes("<img")) {
@@ -214,7 +233,8 @@ export async function createContent(
         type: contentType,
         title: data.title,
         categoryId,
-        inLibrary: input.inLibrary,
+        // Quiz só existe dentro de trilhas: nunca aparece na Central de Conhecimento.
+        inLibrary: contentType === "QUIZ" ? false : input.inLibrary,
         authorId: actor.id,
         versions: {
           create: {
@@ -265,7 +285,7 @@ export async function saveDraft(
       await tx.contentVersionAsset.deleteMany({ where: { versionId: draft.id } });
       await tx.contentVersion.update({
         where: { id: draft.id },
-        data: { ...versionFields(data), body: data.body ?? Prisma.DbNull },
+        data: { ...versionFields(data), body: data.body ?? Prisma.DbNull, quiz: data.quiz ?? Prisma.DbNull },
       });
       versionId = draft.id;
     } else {
@@ -285,7 +305,7 @@ export async function saveDraft(
       where: { id: contentId },
       data: {
         categoryId,
-        inLibrary: input.inLibrary,
+        inLibrary: content.type === "QUIZ" ? false : input.inLibrary,
         ...(content.currentVersionId ? {} : { title: data.title }),
       },
     });
@@ -451,6 +471,55 @@ export async function setContentArchived(
     });
   });
   await indexContent(db, contentId);
+}
+
+/**
+ * Duplica um conteúdo como um novo rascunho independente (para criar uma variação).
+ * Copia a versão em edição (rascunho) ou a vigente; arquivos são compartilhados, não copiados.
+ */
+export async function duplicateContent(db: Db, actor: SessionUser, contentId: string, meta: RequestMeta = {}) {
+  assertPermission(actor, PERMISSIONS.CONTEUDOS_GERENCIAR);
+  const { content, draft, current } = await getContentForEdit(db, actor, contentId);
+  const source = draft ?? current;
+  if (!source) throw new AppError("Não há versão para duplicar.");
+  const assets = await db.contentVersionAsset.findMany({ where: { versionId: source.id }, select: { fileId: true } });
+  const title = `Cópia de ${source.title}`.slice(0, 160);
+  return db.$transaction(async (tx) => {
+    const copy = await tx.content.create({
+      data: {
+        type: content.type,
+        title,
+        categoryId: content.category?.status === "ACTIVE" ? content.categoryId : null,
+        inLibrary: content.inLibrary,
+        authorId: actor.id,
+        versions: {
+          create: {
+            number: 1,
+            title,
+            description: source.description,
+            body: source.body ?? undefined,
+            bodyHtml: source.bodyHtml,
+            bodyText: source.bodyText,
+            quiz: source.quiz ? (cloneQuiz(readQuiz(source.quiz), () => crypto.randomUUID().slice(0, 12)) as Prisma.InputJsonValue) : undefined,
+            fileId: source.file?.id ?? null,
+            url: source.url,
+            durationSeconds: source.durationSeconds,
+            createdById: actor.id,
+            assets: { create: assets.map((a) => ({ fileId: a.fileId })) },
+          },
+        },
+      },
+    });
+    await audit(tx, {
+      actorId: actor.id,
+      action: "conteudo.duplicado",
+      entityType: "conteudo",
+      entityId: copy.id,
+      details: { titulo: title, origem: content.title, origemId: content.id },
+      ip: meta.ip,
+    });
+    return copy;
+  });
 }
 
 export async function getContentStats(db: Db, actor: SessionUser) {

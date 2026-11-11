@@ -16,6 +16,7 @@ const RULES_BY_TYPE: Record<string, CompletionRule[]> = {
   FAQ: ["CONFIRM", "VIEW"],
   IMAGE: ["VIEW", "CONFIRM"],
   LINK: ["VIEW", "CONFIRM"],
+  QUIZ: ["QUIZ"],
 };
 
 export function allowedRules(type: string) {

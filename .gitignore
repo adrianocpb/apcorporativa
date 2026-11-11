@@ -50,3 +50,6 @@ next-env.d.ts
 
 # cliente Prisma gerado (npm install / prisma generate)
 /src/generated/
+
+# Configuração local do Claude (preview)
+.claude/

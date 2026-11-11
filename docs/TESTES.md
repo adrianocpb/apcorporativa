@@ -10,12 +10,14 @@ npm run test:watch
 - Os serviços são testados diretamente (sem navegador), o que cobre também chamadas diretas às Server Actions.
 - A CI (GitHub Actions) roda lint, tipos, testes e build a cada push.
 
-## Cobertura atual — 123 testes
+## Cobertura atual — 140 testes
 
 | Arquivo | Fluxos críticos cobertos |
 | --- | --- |
 | `tests/unit/password.test.ts` | Política de senha, Argon2id, tokens |
 | `tests/integration/auth.test.ts` | Login por e-mail (sem diferenciar maiúsculas); mensagem única para erro; bloqueio de inativo e convite pendente; limite de tentativas; expiração de sessão; **desativação revoga sessões**; convite de uso único, expirado, reemitido; redefinição encerra sessões; troca da própria senha |
+| `tests/unit/quiz.test.ts` | Correção exata (múltipla escolha), nota mínima, respostas normalizadas, perguntas sem gabarito, gabarito comentado, checagem para publicar, duplicação |
+| `tests/integration/quiz.test.ts` | Rascunho incompleto x publicação, fora da Central, regra fixa de conclusão, perguntas sem gabarito, reprovação e limite de tentativas, liberação auditada, aprovação conclui e pontua uma vez, mesmo quiz em duas trilhas, resultados por pergunta, duplicar, permissões |
 | `tests/integration/users.test.ts` | **Colaborador não executa nenhuma operação administrativa** (10 operações); não se autopromove; cadastro com convite e auditoria; duplicidade; validação; mudança de perfil com efeito imediato; proteção do último admin; reativação; links por estado; chaves estrangeiras ativas |
 | `tests/integration/groups.test.ts` | Criação, nome duplicado, membros, exclusão só de grupo vazio, permissão |
 | `tests/unit/rich-text.test.ts` | HTML do editor: elementos permitidos, escape de `<script>`, links `javascript:` recusados, imagens só da plataforma, tabelas |

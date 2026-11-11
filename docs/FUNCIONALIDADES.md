@@ -83,6 +83,20 @@
 - [x] Exportação CSV (progresso, trilhas, histórico, auditoria) com proteção contra fórmulas e acentuação correta no Excel
 - [x] Guia de implantação (servidor, HTTPS, atualizações, caminho para produção)
 
+## Implementadas — Quiz nas trilhas (11/11/2026)
+
+- [x] Quiz como tipo de conteúdo (`QUIZ`): criado uma vez em Conteúdos e reutilizado em quantas trilhas quiser; corrigir uma pergunta vale em todas
+- [x] Perguntas de escolha única, múltipla escolha e verdadeiro ou falso, com explicação opcional
+- [x] Regras por quiz: nota mínima, número de tentativas (ou sem limite) e ordem embaralhada
+- [x] Versões como os demais conteúdos (rascunho, publicar, histórico); só publica com todas as perguntas completas
+- [x] Só dentro das trilhas: nunca aparece na Central de Conhecimento
+- [x] Conclusão do item = aprovação; ao reprovar, a pessoa refaz só o quiz
+- [x] Gabarito comentado só depois da aprovação; antes disso o navegador nunca recebe as respostas certas (correção no servidor)
+- [x] Pontos (`CONTENT_QUIZ`, padrão 15) só na primeira aprovação
+- [x] Resultados no conteúdo: pessoas, aprovação, nota média e taxa de erro por pergunta
+- [x] Relatório individual: melhor nota, tentativas e situação; botão "Liberar novas tentativas" (auditado)
+- [x] Botão "Duplicar" em qualquer conteúdo, para criar uma variação independente
+
 ## Pendentes / evoluções sugeridas
 
 - [ ] Prazo (data limite) nas atribuições de trilha — o campo já existe no banco

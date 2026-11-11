@@ -18,6 +18,7 @@ export const CONTENT_TYPE: Record<string, { label: string; description: string }
   ARTICLE: { label: "Artigo / manual", description: "Texto escrito aqui, com títulos, imagens e tabelas." },
   FAQ: { label: "Pergunta frequente", description: "Uma pergunta e sua resposta." },
   LINK: { label: "Link externo", description: "Atalho para um sistema ou recurso fora da plataforma." },
+  QUIZ: { label: "Quiz", description: "Perguntas com nota mínima para aprovar. Usado só dentro das trilhas." },
 };
 
 export const CONTENT_STATUS: Record<string, { label: string; tone: Tone }> = {
@@ -42,6 +43,7 @@ export const COMPLETION_RULE: Record<string, string> = {
   WATCH: "Assistir ao vídeo",
   CONFIRM: "Confirmar leitura",
   VIEW: "Abrir conclui",
+  QUIZ: "Ser aprovado no quiz",
 };
 
 export const ITEM_STATE: Record<string, { label: string; tone: Tone }> = {

@@ -13,7 +13,8 @@ import { announceReward } from "./reward";
  * Registra a abertura do conteúdo e oferece a ação de conclusão conforme a regra:
  * - CONFIRM: botão liberado após o tempo mínimo (o servidor confere de novo);
  * - VIEW: abrir já conclui;
- * - WATCH: a conclusão vem do player de vídeo.
+ * - WATCH: a conclusão vem do player de vídeo;
+ * - QUIZ: a conclusão vem da aprovação no quiz.
  */
 export function ItemTracker({
   trackId,
@@ -91,12 +92,14 @@ export function ItemTracker({
               : "Confirme quando terminar de ler."}
           </span>
         </div>
+      ) : rule === "QUIZ" ? (
+        <p className="text-small text-ink-soft">A conclusão é registrada quando você for aprovado no quiz.</p>
       ) : rule === "WATCH" ? (
         <p className="text-small text-ink-soft">A conclusão é registrada automaticamente ao assistir ao vídeo.</p>
       ) : (
         <p className="text-small text-ink-soft">Registrando…</p>
       )}
-      {next && (completed || rule !== "CONFIRM") && (
+      {next && (completed || (rule !== "CONFIRM" && rule !== "QUIZ")) && (
         <div>
           <ButtonLink href={next.href} variant={completed ? "primary" : "tonal"} icon={<IconArrowRight />}>
             {next.label}

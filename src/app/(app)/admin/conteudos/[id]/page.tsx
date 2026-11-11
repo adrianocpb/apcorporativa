@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { IconArchive, IconArrowBackUp, IconEye, IconRestore, IconTrash } from "@tabler/icons-react";
+import { IconArchive, IconArrowBackUp, IconCopy, IconEye, IconRestore, IconTrash } from "@tabler/icons-react";
 import { db } from "@/server/db";
 import { requirePermission } from "@/server/auth/current-user";
 import { PERMISSIONS } from "@/server/auth/permissions";
 import { NotFoundError } from "@/server/errors";
 import { getContentForEdit } from "@/server/services/contents";
+import { getQuizReport } from "@/server/services/quiz";
 import { listCategoryOptions } from "@/server/services/categories";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { Alert, Badge } from "@/components/ui/feedback";
+import { Alert, Badge, ProgressBar } from "@/components/ui/feedback";
 import { PageHeader } from "@/components/ui/page-header";
 import { ConfirmActionButton } from "@/components/forms/action-buttons";
 import { ContentTypeIcon } from "@/components/content/content-type-icon";
 import type { RichNode } from "@/lib/rich-text";
+import { readQuiz } from "@/lib/quiz";
 import { formatDateTime } from "@/lib/format";
 import { CONTENT_STATUS, CONTENT_TYPE, VERSION_STATUS } from "@/lib/labels";
 import { ContentForm } from "../content-form";
@@ -22,6 +24,7 @@ import {
   archiveContentAction,
   deleteContentAction,
   discardDraftAction,
+  duplicateContentAction,
   saveContentAction,
 } from "../actions";
 
@@ -39,6 +42,7 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
   }
   const { content, draft, current, versions } = data;
   const categories = await listCategoryOptions(db, actor);
+  const quizReport = content.type === "QUIZ" ? await getQuizReport(db, actor, content.id) : null;
   // Categoria arquivada continua visível no seletor enquanto estiver ligada ao conteúdo.
   if (content.category && content.category.status === "ARCHIVED") {
     categories.unshift({ id: content.category.id, label: `${content.category.name} (arquivada)` });
@@ -65,6 +69,17 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
             <ButtonLink href={`/admin/conteudos/${content.id}/previa`} variant="tonal" icon={<IconEye />}>
               Pré-visualizar
             </ButtonLink>
+            {!archived && (
+              <ConfirmActionButton
+                action={duplicateContentAction.bind(null, content.id)}
+                label="Duplicar"
+                icon={<IconCopy />}
+                title="Duplicar conteúdo?"
+                description="Cria uma cópia independente, em rascunho, para você fazer uma variação. O original continua igual e as trilhas que o usam não mudam."
+                confirmLabel="Duplicar"
+                successMessage="Cópia criada."
+              />
+            )}
             {draft && current && !archived && (
               <ConfirmActionButton
                 action={discardDraftAction.bind(null, content.id)}
@@ -157,6 +172,7 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
                     durationSeconds: editing.durationSeconds,
                     url: editing.url ?? "",
                     body: (editing.body as RichNode | null) ?? null,
+                    quiz: readQuiz(editing.quiz),
                   }}
                 />
               </>
@@ -180,6 +196,46 @@ export default async function EditContentPage({ params }: PageProps<"/admin/cont
               </dl>
             </CardBody>
           </Card>
+
+          {quizReport && (
+            <Card>
+              <CardHeader title="Resultados do quiz" subtitle={`Versão vigente (${quizReport.version})`} />
+              <CardBody className="flex flex-col gap-4">
+                <dl className="grid grid-cols-2 gap-3">
+                  <div>
+                    <dt className="text-small text-ink-muted">Pessoas</dt>
+                    <dd className="text-h5 font-medium text-ink">{quizReport.people}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-small text-ink-muted">Aprovação</dt>
+                    <dd className="text-h5 font-medium text-ink">{quizReport.passRate === null ? "—" : `${quizReport.passRate}%`}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-small text-ink-muted">Tentativas</dt>
+                    <dd className="text-h5 font-medium text-ink">{quizReport.attempts}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-small text-ink-muted">Nota média</dt>
+                    <dd className="text-h5 font-medium text-ink">{quizReport.averageScore === null ? "—" : `${quizReport.averageScore}%`}</dd>
+                  </div>
+                </dl>
+                {quizReport.attempts > 0 && (
+                  <div className="flex flex-col gap-3 border-t border-line pt-4">
+                    <p className="text-small font-medium text-ink">Taxa de erro por pergunta</p>
+                    {quizReport.questions.map((q) => (
+                      <div key={q.number} className="flex flex-col gap-1">
+                        <p className="truncate text-small text-ink-soft" title={q.text}>
+                          {q.number}. {q.text}
+                        </p>
+                        <ProgressBar value={q.errorRate ?? 0} label={`Taxa de erro da pergunta ${q.number}`} tone="warning" />
+                      </div>
+                    ))}
+                    <p className="text-small text-ink-muted">Perguntas com muito erro indicam onde o conteúdo da trilha pode estar pouco claro.</p>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          )}
 
           <Card>
             <CardHeader title="Histórico de versões" subtitle="Versões anteriores ficam preservadas" />

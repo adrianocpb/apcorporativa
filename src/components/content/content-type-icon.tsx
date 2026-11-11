@@ -1,6 +1,7 @@
 import {
   IconFileText,
   IconHelpCircle,
+  IconListCheck,
   IconLink,
   IconMovie,
   IconNotebook,
@@ -15,6 +16,7 @@ const ICONS = {
   ARTICLE: IconNotebook,
   FAQ: IconHelpCircle,
   LINK: IconLink,
+  QUIZ: IconListCheck,
 } as const;
 
 /** Ícone do tipo de conteúdo em caixa tonal. */

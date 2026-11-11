@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
-import { IconDownload, IconExternalLink } from "@tabler/icons-react";
+import { IconCircleCheck, IconDownload, IconExternalLink } from "@tabler/icons-react";
 import { buttonClasses } from "@/components/ui/button";
 import { formatBytes } from "@/lib/file-rules";
+import { QUIZ_KIND_LABEL, readQuiz } from "@/lib/quiz";
+import { cn } from "@/lib/cn";
 
 export type ViewerVersion = {
   title: string;
@@ -9,6 +11,7 @@ export type ViewerVersion = {
   bodyHtml: string | null;
   url: string | null;
   file: { id: string; originalName: string; mimeType: string; size: number } | null;
+  quiz?: unknown;
 };
 
 /**
@@ -19,11 +22,17 @@ export function ContentViewer({
   type,
   version,
   videoElement,
+  quizElement,
+  showQuizKey = false,
 }: {
   type: string;
   version: ViewerVersion;
   /** Substitui o player padrão (ex.: player com registro de progresso nas trilhas). */
   videoElement?: ReactNode;
+  /** Quiz para responder (trilhas). Sem ele, o quiz só aparece com gabarito se showQuizKey. */
+  quizElement?: ReactNode;
+  /** Pré-visualização do administrador: mostra perguntas com o gabarito. Nunca para colaboradores. */
+  showQuizKey?: boolean;
 }) {
   const fileUrl = version.file ? `/api/arquivos/${version.file.id}` : null;
   return (
@@ -85,6 +94,9 @@ export function ContentViewer({
         />
       )}
 
+      {type === "QUIZ" && quizElement}
+      {type === "QUIZ" && !quizElement && showQuizKey && <QuizKey quiz={version.quiz} />}
+
       {type === "LINK" && version.url && (
         <div className="flex flex-col items-start gap-3 rounded-md border border-line p-5">
           <p className="text-body text-ink-soft">
@@ -102,5 +114,42 @@ export function ContentViewer({
         </div>
       )}
     </article>
+  );
+}
+
+/** Perguntas com o gabarito marcado (só na pré-visualização do administrador). */
+function QuizKey({ quiz: value }: { quiz: unknown }) {
+  const quiz = readQuiz(value);
+  if (!quiz.questions.length) return <p className="text-body text-ink-muted">Nenhuma pergunta ainda.</p>;
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-small text-ink-muted">
+        Nota mínima {quiz.passPercent}% · {quiz.maxAttempts ? `até ${quiz.maxAttempts} tentativa(s)` : "tentativas sem limite"}
+        {quiz.shuffle ? " · ordem embaralhada" : ""}. O gabarito abaixo só aparece para o colaborador depois da aprovação.
+      </p>
+      <ol className="flex flex-col gap-4">
+        {quiz.questions.map((q, i) => (
+          <li key={q.id} className="flex flex-col gap-2 rounded-lg border border-line p-4">
+            <p className="text-small text-ink-muted">
+              Pergunta {i + 1} · {QUIZ_KIND_LABEL[q.kind]}
+            </p>
+            <p className="font-medium text-ink">{q.text || "(sem enunciado)"}</p>
+            <ul className="flex flex-col gap-1.5">
+              {q.options.map((o) => (
+                <li
+                  key={o.id}
+                  className={cn("flex items-center gap-2 rounded-md px-3 py-1.5 text-body", o.correct ? "bg-success-subtle text-success-text" : "text-ink-soft")}
+                >
+                  {o.correct && <IconCircleCheck className="size-4 shrink-0" aria-hidden="true" />}
+                  {o.text || "(vazia)"}
+                  {o.correct && <span className="sr-only"> (correta)</span>}
+                </li>
+              ))}
+            </ul>
+            {q.explanation && <p className="text-small text-ink-soft">Explicação: {q.explanation}</p>}
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

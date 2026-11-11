@@ -82,6 +82,7 @@ model User {
   enrollments       Enrollment[]
   contentProgress   ContentProgress[]
   completions       CompletionRecord[]
+  quizAttempts      QuizAttempt[]
   pointTransactions PointTransaction[] @relation("PointsOwner")
   pointAdjustments  PointTransaction[] @relation("PointsAdjuster")
   achievements      UserAchievement[]
@@ -189,6 +190,7 @@ enum ContentType {
   ARTICLE // manual, artigo ou texto explicativo escrito no editor
   FAQ // pergunta (título) e resposta (corpo)
   LINK // recurso externo
+  QUIZ // perguntas com correção no servidor (só dentro de trilhas)
 }
 
 enum ContentStatus {
@@ -269,6 +271,7 @@ model Content {
   views            ContentView[]
   progress         ContentProgress[]
   completions      CompletionRecord[]
+  quizAttempts     QuizAttempt[]
   viewCount        Int                @default(0)
   publishedAt      DateTime? // primeira publicação
   archivedAt       DateTime?
@@ -290,6 +293,7 @@ model ContentVersion {
   title                String
   description          String?
   body                 Json? // documento do editor (Tiptap)
+  quiz                 Json? // quiz: perguntas, alternativas, gabarito e configurações (src/lib/quiz.ts)
   bodyHtml             String? // HTML gerado no servidor só com elementos permitidos
   bodyText             String? // texto puro para busca
   fileId               String?
@@ -301,6 +305,7 @@ model ContentVersion {
   assets               ContentVersionAsset[]
   progress             ContentProgress[]
   completions          CompletionRecord[]
+  quizAttempts         QuizAttempt[]
   createdById          String?
   createdBy            User?                 @relation("VersionCreator", fields: [createdById], references: [id], onDelete: SetNull)
   publishedById        String?
@@ -338,6 +343,7 @@ enum CompletionRule {
   WATCH // vídeo: percentual assistido validado no servidor
   CONFIRM // o colaborador confirma após o tempo mínimo de leitura
   VIEW // abrir já conclui (imagens e links simples)
+  QUIZ // aprovação no quiz (nota mínima)
 }
 
 enum EnrollmentStatus {
@@ -355,6 +361,7 @@ enum CompletionMethod {
   VIDEO_WATCHED
   CONFIRMED
   VIEWED
+  QUIZ_PASSED
 }
 
 model Track {
@@ -377,6 +384,7 @@ model Track {
   assignments       TrackAssignment[]
   enrollments       Enrollment[]
   completions       CompletionRecord[]
+  quizAttempts      QuizAttempt[]
   publishedAt       DateTime?
   archivedAt        DateTime?
   createdAt         DateTime           @default(now())
@@ -503,6 +511,7 @@ enum PointEvent {
   CONTENT_VIDEO // concluir um vídeo
   CONTENT_READING // concluir PDF, manual/artigo ou FAQ
   CONTENT_OTHER // concluir imagem ou link
+  CONTENT_QUIZ // ser aprovado num quiz
   MODULE_COMPLETED // finalizar uma etapa
   TRACK_COMPLETED // finalizar uma trilha
   ACHIEVEMENT // bônus de conquista
@@ -611,4 +620,30 @@ model ContentView {
 
   @@index([contentId, viewedAt])
   @@index([userId, viewedAt])
+}
+
+// Tentativa de quiz. A correção é feita no servidor; o gabarito nunca vai ao navegador.
+// Só é acrescentada (histórico); "liberar novas tentativas" marca as anteriores como anuladas.
+model QuizAttempt {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentId        String
+  content          Content        @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentVersionId String
+  contentVersion   ContentVersion @relation(fields: [contentVersionId], references: [id], onDelete: Cascade)
+  trackId          String?
+  track            Track?         @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  answers          Json // { idDaPergunta: [idsDasAlternativas] }
+  results          Json // { idDaPergunta: acertou }
+  correctCount     Int
+  totalCount       Int
+  scorePercent     Int
+  passed           Boolean
+  voidedAt         DateTime? // tentativa anulada pelo administrador (não conta no limite)
+  voidedById       String?
+  createdAt        DateTime       @default(now())
+
+  @@index([userId, contentVersionId])
+  @@index([contentVersionId])
 }
